@@ -9,29 +9,7 @@ const CommunityHub = () => {
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl">🌾</span>
-              <span className="text-xl font-semibold text-gray-800">FarmLink 360</span>
-            </div>
-            <nav className="flex space-x-6">
-              <a href="#" className="text-gray-600 hover:text-gray-800">Marketplace</a>
-              <a href="#" className="text-gray-800 font-medium">Community</a>
-              <a href="#" className="text-gray-600 hover:text-gray-800">Profile</a>
-            </nav>
-          </div>
-          <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {/* Community Content */}
-      <div className="px-6 py-8">
+    <div className="max-w-6xl mx-auto px-6 py-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Community Hub</h1>
         
         <p className="text-xl text-gray-600 mb-8">
