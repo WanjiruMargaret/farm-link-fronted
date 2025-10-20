@@ -1,45 +1,95 @@
+import { Link } from 'react-router-dom';
+
 const Profile = () => {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-8">Profile</h1>
-      
-      {/* Profile Info */}
-      <div className="flex items-center mb-12">
-        <div className="w-32 h-32 rounded-full overflow-hidden mr-8">
-          <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" 
-            alt="Michael Brown"
-            className="w-full h-full object-cover"
-          />
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="flex items-center justify-between px-8 py-6 bg-white shadow-sm">
+        <div className="flex items-center space-x-12">
+          <div className="flex items-center space-x-3">
+            <span className="text-2xl text-green-600">🌾</span>
+            <span className="text-2xl font-bold text-gray-800">
+              FarmLink 360
+            </span>
+          </div>
+          <nav className="flex space-x-8">
+            <Link to="/marketplace" className="text-gray-600 hover:text-gray-800 font-medium">
+              Marketplace
+            </Link>
+            <Link to="/community" className="text-gray-600 hover:text-gray-800 font-medium">
+              Community
+            </Link>
+            <Link to="/profile" className="text-gray-800 font-semibold border-b-2 border-green-600 pb-1">
+              Profile
+            </Link>
+          </nav>
         </div>
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Michael Brown</h2>
-          <p className="text-gray-600 text-lg">michael.brown@example.com</p>
-        </div>
-      </div>
+        <button className="px-6 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 font-medium">
+          Logout
+        </button>
+      </header>
 
-      {/* Farm Details */}
-      <div className="bg-white rounded-lg shadow-sm border p-8">
-        <h3 className="text-2xl font-bold text-gray-800 mb-6">Farm Details</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex justify-between items-center py-4 border-b border-gray-200">
-            <span className="text-lg font-medium text-gray-700">Farm Name</span>
-            <span className="text-lg text-gray-600">Green Pastures</span>
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-8 py-12">
+        {/* Title */}
+        <h1 className="text-5xl font-bold text-gray-900 mb-12">
+          Profile
+        </h1>
+
+        {/* Profile Info */}
+        <div className="flex items-center mb-12 space-x-8">
+          <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200">
+            <img 
+              src="https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?w=128&h=128&fit=crop&crop=face" 
+              alt="Michael Brown"
+              className="w-full h-full object-cover"
+            />
           </div>
+          <div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-3">
+              Michael Brown
+            </h2>
+            <p className="text-xl text-gray-600">
+              michael.brown@example.com
+            </p>
+          </div>
+        </div>
+
+        {/* Farm Details */}
+        <section>
+          <h3 className="text-3xl font-bold text-gray-900 mb-8">
+            Farm Details
+          </h3>
           
-          <div className="flex justify-between items-center py-4 border-b border-gray-200">
-            <span className="text-lg font-medium text-gray-700">Location</span>
-            <span className="text-lg text-gray-600">Nairobi, Kenya</span>
+          <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+            {/* Farm Details Rows */}
+            <div className="flex justify-between items-center py-6 border-b border-gray-200">
+              <span className="text-xl font-semibold text-gray-900">
+                Farm Name
+              </span>
+              <span className="text-xl text-gray-600">
+                Green Pastures
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center py-6 mb-8">
+              <span className="text-xl font-semibold text-gray-900">
+                Location
+              </span>
+              <span className="text-xl text-gray-600">
+                Nairobi, Kenya
+              </span>
+            </div>
+            
+            {/* Edit Profile Button */}
+            <div className="flex justify-end">
+              <button className="bg-green-700 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-800 transition-colors text-lg">
+                Edit Profile
+              </button>
+            </div>
           </div>
-        </div>
-        
-        <div className="mt-8 flex justify-end">
-          <button className="bg-primary text-white px-8 py-3 rounded-lg hover:bg-secondary font-medium">
-            Edit Profile
-          </button>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };
