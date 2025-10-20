@@ -1,65 +1,78 @@
 import { useState } from 'react';
-import LoadingSpinner from '../components/LoadingSpinner';
 
 const CommunityHub = () => {
-  const [loading, setLoading] = useState(false);
-  const [posts] = useState([
-    { id: 1, user: 'John Farmer', content: 'My tomatoes have yellow spots. Any advice?', image: '🍅', time: '2 hours ago' },
-    { id: 2, user: 'Mary Agri', content: 'Best fertilizer for maize in rainy season?', image: '🌽', time: '4 hours ago' },
+  const [searchTerm, setSearchTerm] = useState('');
+  const [topics] = useState([
+    { id: 1, title: 'Pest control for tomatoes', author: 'John Doe', replies: 12 },
+    { id: 2, title: 'Crop rotation techniques', author: 'Sarah Lee', replies: 7 },
+    { id: 3, title: 'Irrigation tips for droughts', author: 'Michael Brown', replies: 5 },
   ]);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Community Hub</h1>
-        <p className="text-gray-600">Connect with fellow farmers and share knowledge</p>
-      </div>
-
-      {/* Post Form */}
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4">Ask the Community</h2>
-        <textarea 
-          className="w-full p-3 border border-gray-300 rounded-lg mb-4" 
-          rows="3" 
-          placeholder="Share your farming question or experience..."
-        ></textarea>
-        <div className="flex justify-between items-center">
-          <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
-            📷 Add Photo
-          </button>
-          <button className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-secondary">
-            Post Question
-          </button>
-        </div>
-      </div>
-
-      {/* Posts Feed */}
-      {loading ? (
-        <LoadingSpinner size="lg" />
-      ) : (
-        <div className="space-y-4">
-          {posts.map(post => (
-            <div key={post.id} className="bg-white p-6 rounded-lg shadow-md">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                  {post.user[0]}
-                </div>
-                <div className="ml-3">
-                  <h3 className="font-semibold">{post.user}</h3>
-                  <p className="text-sm text-gray-500">{post.time}</p>
-                </div>
-              </div>
-              <p className="text-gray-700 mb-4">{post.content}</p>
-              <div className="text-4xl mb-4">{post.image}</div>
-              <div className="flex space-x-4 text-sm text-gray-500">
-                <button className="hover:text-primary">👍 Like</button>
-                <button className="hover:text-primary">💬 Comment</button>
-                <button className="hover:text-primary">📤 Share</button>
-              </div>
+    <div className="max-w-6xl mx-auto bg-gray-50 min-h-screen">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">🌾</span>
+              <span className="text-xl font-semibold text-gray-800">FarmLink 360</span>
             </div>
-          ))}
+            <nav className="flex space-x-6">
+              <a href="#" className="text-gray-600 hover:text-gray-800">Marketplace</a>
+              <a href="#" className="text-gray-800 font-medium">Community</a>
+              <a href="#" className="text-gray-600 hover:text-gray-800">Profile</a>
+            </nav>
+          </div>
+          <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+            Logout
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* Community Content */}
+      <div className="px-6 py-8">
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">Community Hub</h1>
+        
+        <p className="text-xl text-gray-600 mb-8">
+          Share your experience<br />with other farmers
+        </p>
+
+        {/* Search Bar */}
+        <div className="flex gap-4 mb-12">
+          <input
+            type="text"
+            placeholder="Search for topics..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <button className="bg-primary text-white px-8 py-3 rounded-lg hover:bg-secondary font-medium text-lg">
+            Search
+          </button>
+        </div>
+
+        {/* Recent Topics */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Recent Topics</h2>
+          
+          <div className="space-y-4">
+            {topics.map(topic => (
+              <div key={topic.id} className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{topic.title}</h3>
+                    <p className="text-gray-600">by {topic.author}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-lg font-medium text-gray-700">{topic.replies} replies</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
