@@ -1,15 +1,20 @@
 import React from "react";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Welcome from "./pages/Welcome";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-export default function App() {
+
+function App() {
   return (
-    <div className="app-container">
-      <Navbar />
-      <div className="main-content">
-        <Sidebar />
-        <Dashboard />
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Welcome />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
+export default App;
