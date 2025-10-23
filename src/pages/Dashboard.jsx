@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   return (
@@ -44,9 +45,11 @@ export default function Dashboard() {
             Track your crops, get planting reminders, and record harvest data.
             Manage your fields smarter to increase yield.
           </p>
-          <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            Manage Crops
-          </button>
+          <Link to="/crops">
+            <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              Manage Crops
+            </button>
+          </Link>
         </section>
 
         <section className="bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition">
@@ -62,9 +65,11 @@ export default function Dashboard() {
             Monitor livestock health, track feed schedules, and record
             production data.
           </p>
-          <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            Manage Livestock
-          </button>
+          <Link to="/livestock">
+            <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              Manage Livestock
+            </button>
+          </Link>
         </section>
 
         <section className="bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition">
@@ -75,9 +80,11 @@ export default function Dashboard() {
             Upload a photo of your crop or animal to detect potential diseases
             using our AI-powered system.
           </p>
-          <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            Start Diagnosis
-          </button>
+          <Link to="/ai-diagnosis">
+            <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              Start Diagnosis
+            </button>
+          </Link>
         </section>
 
         <section className="bg-white rounded-2xl shadow-md p-5 hover:shadow-lg transition lg:col-span-2">
@@ -88,9 +95,11 @@ export default function Dashboard() {
             Connect directly with buyers and sellers. Explore real-time crop and
             livestock prices.
           </p>
-          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            Go to Marketplace
-          </button>
+          <Link to="/marketplace">
+            <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              Go to Marketplace
+            </button>
+          </Link>
         </section>
       </main>
     </div>
