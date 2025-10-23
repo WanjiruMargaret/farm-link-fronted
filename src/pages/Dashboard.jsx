@@ -50,7 +50,7 @@ export default function Dashboard() {
           <img
             src="/images/cow.png"
             alt="Livestock"
-            className="rounded-lg mb-4 h-40 w-full object-cover"
+            className="rounded-lg mb-4 h-32 w-full object-contain"
           />
           <p className="text-gray-700 text-sm">
             Monitor livestock health, track feed schedules, and record
