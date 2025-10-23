@@ -1,18 +1,24 @@
 import React from "react";
+import Navbar from "../components/Navbar";
 
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-green-50 flex flex-col">
       <header className="bg-green-700 text-white flex items-center justify-between px-6 py-4 shadow-md">
-        <div className="flex items-center space-x-3">
-          <img
-            src="/images/logo.png"
-            alt="FarmLink 360 Logo"
-            className="w-10 h-10"
-          />
-          <h1 className="text-2xl font-bold">FarmLink 360</h1>
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-3">
+            <img
+              src="/images/logo.png"
+              alt="FarmLink 360 Logo"
+              className="w-8 h-8"
+            />
+            <h1 className="text-xl font-bold">FarmLink 360</h1>
+          </div>
+          <p className="italic text-xs ml-11">
+            The Complete Digital Farm Companion
+          </p>
         </div>
-        <p className="italic text-sm">The Complete Digital Farm Companion</p>
+        <Navbar />
       </header>
 
       <div className="text-center mb-8">
