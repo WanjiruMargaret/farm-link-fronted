@@ -24,7 +24,7 @@ export default function Welcome() {
         </Link>
       </div>
 
-      <Link to="/learn-more" className="text-gray-700 hover:underline">
+      <Link to="/about" className="text-gray-700 hover:underline">
         Learn More
       </Link>
     </div>
