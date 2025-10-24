@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import AIDiagnosis from "./pages/AIDiagnosis";
 import Crops from "./pages/Crops";
 import Livestock from "./pages/Livestock";
+import About from "./pages/About";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Route path="/ai-diagnosis" element={<AIDiagnosis />} />
       <Route path="/crops" element={<Crops />} />
       <Route path="/livestock" element={<Livestock />} />
+      <Route path="/about" element={<About />} />
     </Routes>
   );
 }
