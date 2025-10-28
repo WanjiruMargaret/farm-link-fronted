@@ -19,9 +19,8 @@ export default function Welcome() {
         </h2>
 
         <p className="text-lg sm:text-xl text-gray-700 mb-6">
-          A farmer-first marketplace and management toolkit that removes
-          middlemen, helps you manage crops and livestock, and uses AI to
-          diagnose problems fast.
+          Connecting Kenyan farmers directly to markets through smart technology. 
+          Eliminate middlemen, reduce waste, and increase farm profitability with AI-powered tools and community support.
         </p>
 
         <main className="w-full max-w-4xl">
@@ -91,35 +90,116 @@ export default function Welcome() {
             </article>
           </section>
 
-          <section className="text-center p-6 bg-green-100 rounded-lg">
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">
-              Why FarmLink 360?
+          {/* Problem & Solution */}
+          <section className="mb-10 bg-white p-8 rounded-lg shadow-md">
+            <h4 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              Solving Real Problems for Kenyan Farmers
             </h4>
-            <p className="text-gray-700 mb-4">
-              Middlemen often take large cuts and leave farmers with low
-              profits. FarmLink 360 empowers farmers with tools to sell direct,
-              manage their operations, and get rapid AI-powered insights so they
-              can increase yield and income.
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h5 className="text-lg font-semibold text-red-600 mb-4">Current Challenges</h5>
+                <div className="space-y-3">
+                  <div className="bg-red-50 p-3 rounded">
+                    <div className="font-semibold text-gray-800">Middlemen Take Large Cuts</div>
+                    <div className="text-sm text-gray-600">Farmers often sell far below market price</div>
+                    <div className="text-red-600 font-bold">Major income loss</div>
+                  </div>
+                  <div className="bg-red-50 p-3 rounded">
+                    <div className="font-semibold text-gray-800">Post-Harvest Waste</div>
+                    <div className="text-sm text-gray-600">Produce spoils due to poor market access</div>
+                    <div className="text-red-600 font-bold">Significant losses</div>
+                  </div>
+                  <div className="bg-red-50 p-3 rounded">
+                    <div className="font-semibold text-gray-800">Disease & Pest Damage</div>
+                    <div className="text-sm text-gray-600">Late detection reduces crop yields</div>
+                    <div className="text-red-600 font-bold">Preventable losses</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h5 className="text-lg font-semibold text-green-600 mb-4">FarmLink Solutions</h5>
+                <div className="space-y-3">
+                  <div className="bg-green-50 p-3 rounded">
+                    <div className="font-semibold text-gray-800">Direct Market Access</div>
+                    <div className="text-sm text-gray-600">Connect directly with buyers</div>
+                    <div className="text-green-600 font-bold">Higher farmer income</div>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded">
+                    <div className="font-semibold text-gray-800">AI Disease Detection</div>
+                    <div className="text-sm text-gray-600">Early detection and treatment advice</div>
+                    <div className="text-green-600 font-bold">Better crop health</div>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded">
+                    <div className="font-semibold text-gray-800">Smart Timing</div>
+                    <div className="text-sm text-gray-600">Market insights for better decisions</div>
+                    <div className="text-green-600 font-bold">Reduced waste</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          {/* Farmer Benefits */}
+          <section className="mb-10 bg-gradient-to-r from-blue-600 to-green-600 text-white p-8 rounded-lg">
+            <h4 className="text-xl font-bold mb-6 text-center text-white">Why Farmers Choose FarmLink</h4>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="text-center bg-white text-gray-800 p-4 rounded shadow-md">
+                <div className="text-2xl font-bold text-blue-600">💰</div>
+                <div className="text-sm text-gray-600">Higher Prices</div>
+                <div className="font-semibold text-gray-800">Sell direct to buyers</div>
+              </div>
+              <div className="text-center bg-white text-gray-800 p-4 rounded shadow-md">
+                <div className="text-2xl font-bold text-green-600">🤖</div>
+                <div className="text-sm text-gray-600">AI Help</div>
+                <div className="font-semibold text-gray-800">Instant disease detection</div>
+              </div>
+              <div className="text-center bg-white text-gray-800 p-4 rounded shadow-md">
+                <div className="text-2xl font-bold text-purple-600">👥</div>
+                <div className="text-sm text-gray-600">Community</div>
+                <div className="font-semibold text-gray-800">Learn from other farmers</div>
+              </div>
+              <div className="text-center bg-white text-gray-800 p-4 rounded shadow-md">
+                <div className="text-2xl font-bold text-orange-600">📱</div>
+                <div className="text-sm text-gray-600">Easy to Use</div>
+                <div className="font-semibold text-gray-800">Works on any phone</div>
+              </div>
+            </div>
+          </section>
+
+          <section className="text-center p-6 bg-green-100 rounded-lg">
+            <h4 className="text-2xl font-bold text-gray-800 mb-4">
+              Join the Agricultural Revolution
+            </h4>
+            <p className="text-gray-700 mb-6">
+              We're building the future of farming in Kenya and across East Africa. 
+              Join us in creating a more efficient, profitable, and sustainable agricultural ecosystem.
             </p>
 
-            <div className="flex justify-center gap-3">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 mb-4">
               <Link
                 to="/login"
                 className="px-5 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
               >
-                Already have an account? Log in
+                Farmer Login
               </Link>
               <Link
                 to="/signup"
                 className="px-6 py-3 bg-green-600 text-white rounded-md shadow hover:bg-green-700"
-                aria-label="Sign up for FarmLink 360"
               >
-                Sign Up -- Get Started
+                Join as Farmer
               </Link>
+              <a
+                href="mailto:partnerships@farmlink360.co.ke"
+                className="px-6 py-3 bg-gray-600 text-white rounded-md shadow hover:bg-gray-700"
+              >
+                Partner With Us
+              </a>
             </div>
 
             <Link to="/about" className="text-gray-700 hover:underline">
-              Learn More
+              Learn More About Our Mission
             </Link>
           </section>
         </main>

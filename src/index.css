@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+/* Custom colors for the app */
+:root {
+  --primary: #22c55e;
+  --secondary: #16a34a;
+}
+
+.bg-primary { background-color: var(--primary); }
+.bg-secondary { background-color: var(--secondary); }
+.focus\:ring-primary:focus { --tw-ring-color: var(--primary); }
