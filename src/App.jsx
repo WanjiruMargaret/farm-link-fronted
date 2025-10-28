@@ -5,8 +5,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import AIDiagnosis from "./pages/AIDiagnosis";
-import Crops from "./pages/Crops";
-import Livestock from "./pages/Livestock";
+import Records from "./pages/Records";
 import About from "./pages/About";
 
 function App() {
@@ -17,8 +16,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/ai-diagnosis" element={<AIDiagnosis />} />
-      <Route path="/crops" element={<Crops />} />
-      <Route path="/livestock" element={<Livestock />} />
+      <Route path="/records" element={<Records />} />
       <Route path="/about" element={<About />} />
     </Routes>
   );
