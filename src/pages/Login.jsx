@@ -75,7 +75,6 @@ export default function Login() {
               />
               <span>Remember Me</span>
             </label>
-
             <button type="button" className="text-green-600 hover:underline">
               Forgot Password?
             </button>
