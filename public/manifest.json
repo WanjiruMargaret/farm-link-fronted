@@ -1,0 +1,28 @@
+{
+  "name": "FarmLink 360 - Smart Farm Companion",
+  "short_name": "FarmLink 360",
+  "description": "Complete digital platform for farmers - marketplace, weather, records, and more",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["agriculture", "business", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}
