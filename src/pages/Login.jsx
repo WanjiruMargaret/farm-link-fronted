@@ -1,6 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // Simulate a successful login (no backend yet)
+    // Later, you'll replace this with an API call
+    navigate("/dashboard"); // or "/home"
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-green-50">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
@@ -11,7 +22,7 @@ export default function Login() {
           Log in to continue managing your farm
         </p>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <label
               htmlFor="email"
