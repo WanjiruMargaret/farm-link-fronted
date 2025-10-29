@@ -1,6 +1,16 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+  const navigate = useNavigate();
+
+  const handleSignup = (e) => {
+    e.preventDefault(); // prevent reload
+
+    // Simulate successful signup (no backend yet)
+    navigate("/dashboard"); // or "/login" if you prefer
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-300">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
@@ -11,7 +21,7 @@ export default function Signup() {
           Join FarmLink 360 to start managing your farm digitally
         </p>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSignup}>
           <div>
             <label
               htmlFor="username"
