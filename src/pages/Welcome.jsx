@@ -48,22 +48,21 @@ export default function Welcome() {
 
             <article className="p-6 bg-green-300 rounded-lg shadow">
               <h3 className="text-xl font-semibold text-green-800 mb-2">
-                Record
+                Smart Farm Records
               </h3>
               <p className="text-gray-600">
-                Track planting, harvesting, feed, and health records in one
-                place to better manage yields and costs.
+                Complete financial tracking - income, expenses, profit analysis.
+                Make data-driven decisions to maximize profitability.
               </p>
             </article>
 
             <article className="p-6 bg-green-300 rounded-lg shadow">
               <h3 className="text-xl font-semibold text-green-800 mb-2">
-                Weather Alerts
+                Weather & Market Intelligence
               </h3>
               <p className="text-gray-600">
-                Get real-time weather updates and alerts tailored to your farm's
-                location. Prepare for adverse conditions and protect your crops
-                and livestock.
+                Real-time weather alerts, market prices, and farming tips.
+                Know when to plant, harvest, and sell for maximum profit.
               </p>
             </article>
 
@@ -80,12 +79,11 @@ export default function Welcome() {
 
             <article className="p-6 bg-green-300 rounded-lg shadow">
               <h3 className="text-xl font-semibold text-green-800 mb-2">
-                About & Support
+                Farm Finance
               </h3>
               <p className="text-gray-600">
-                Learn more about FarmLink 360's mission, how it supports
-                farmers, and how to get help or provide feedback to improve the
-                platform.
+                Access loans, insurance, and financial tools designed for farmers.
+                Grow your business with flexible financing options.
               </p>
             </article>
           </section>
@@ -190,12 +188,28 @@ export default function Welcome() {
               >
                 Join as Farmer
               </Link>
-              <a
-                href="mailto:partnerships@farmlink360.co.ke"
-                className="px-6 py-3 bg-gray-600 text-white rounded-md shadow hover:bg-gray-700"
+              <Link
+                to="/marketplace"
+                className="px-6 py-3 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
               >
-                Partner With Us
-              </a>
+                Explore Marketplace
+              </Link>
+
+              <button
+                onClick={() => {
+                  if (window.matchMedia('(display-mode: standalone)').matches) {
+                    alert('App is already installed!');
+                  } else if ('serviceWorker' in navigator) {
+                    alert('To install: Open in mobile browser and look for "Add to Home Screen" option');
+                  } else {
+                    alert('PWA not supported in this browser');
+                  }
+                }}
+                className="px-6 py-3 bg-purple-600 text-white rounded-md shadow hover:bg-purple-700 flex items-center space-x-2"
+              >
+                <span>📱</span>
+                <span>Install App</span>
+              </button>
             </div>
 
             <Link to="/about" className="text-gray-700 hover:underline">
