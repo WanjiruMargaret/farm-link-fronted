@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, MapPin, ShoppingCart, Filter, SlidersHorizontal, Heart, Star, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import Navbar from '../components/Navbar';
 import Toast from '../components/Toast';
+import apiService from '../services/api';
 
 const Marketplace = () => {
   const [activeTab, setActiveTab] = useState('crops');
@@ -83,7 +84,27 @@ const Marketplace = () => {
 
   const locations = [...new Set(marketData[activeTab].map(p => p.location))];
 
-  const filteredProducts = marketData[activeTab]
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadProducts();
+  }, [activeTab]);
+
+  const loadProducts = async () => {
+    try {
+      const response = await apiService.getAllProducts(activeTab);
+      setAllProducts(response.products || []);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      setAllProducts(marketData[activeTab] || []);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const currentProducts = allProducts.length > 0 ? allProducts : marketData[activeTab];
+  const filteredProducts = currentProducts
     .filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            product.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -275,7 +296,13 @@ const Marketplace = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">⏳</div>
+            <p className="text-gray-500">Loading products...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map(product => {
             const isInWishlist = wishlist.find(item => item.id === product.id);
             const isRecentlyAdded = recentlyAdded?.id === product.id;
@@ -370,9 +397,10 @@ const Marketplace = () => {
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
 
-        {filteredProducts.length === 0 && (
+        {!loading && filteredProducts.length === 0 && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No products found</h3>

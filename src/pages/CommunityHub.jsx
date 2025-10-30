@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plus, MessageCircle, ThumbsUp, Clock, User, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import apiService from '../services/api';
 
 const CommunityHub = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,7 +10,9 @@ const CommunityHub = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showReplies, setShowReplies] = useState(false);
   const [newReply, setNewReply] = useState('');
-  const [posts, setPosts] = useState([
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [mockPosts] = useState([
     {
       id: 1,
       title: 'Best practices for tomato pest control',
@@ -115,6 +118,24 @@ const CommunityHub = () => {
   ]);
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'farming-tips' });
 
+  useEffect(() => {
+    loadPosts();
+  }, [activeCategory]);
+
+  const loadPosts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await apiService.getPosts(activeCategory);
+      setPosts(response.posts || []);
+    } catch (error) {
+      console.error('Failed to load posts:', error);
+      // Fallback to mock data
+      setPosts(mockPosts);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const categories = [
     { id: 'all', name: 'All Topics', count: posts.length },
     { id: 'farming-tips', name: 'Farming Tips', count: posts.filter(p => p.category === 'farming-tips').length },
@@ -124,19 +145,28 @@ const CommunityHub = () => {
     { id: 'market-info', name: 'Market Info', count: posts.filter(p => p.category === 'market-info').length }
   ];
 
-  const handleNewPost = (e) => {
+  const handleNewPost = async (e) => {
     e.preventDefault();
-    const post = {
-      id: posts.length + 1,
-      ...newPost,
-      author: 'You',
-      replies: [],
-      likes: 0,
-      timeAgo: 'Just now'
-    };
-    setPosts([post, ...posts]);
-    setNewPost({ title: '', content: '', category: 'farming-tips' });
-    setShowNewPostModal(false);
+    try {
+      const response = await apiService.createPost(newPost);
+      setPosts([response.post, ...posts]);
+      setNewPost({ title: '', content: '', category: 'farming-tips' });
+      setShowNewPostModal(false);
+    } catch (error) {
+      console.error('Failed to create post:', error);
+      // Fallback to local state
+      const post = {
+        id: posts.length + 1,
+        ...newPost,
+        author: 'You',
+        replies: [],
+        likes: 0,
+        timeAgo: 'Just now'
+      };
+      setPosts([post, ...posts]);
+      setNewPost({ title: '', content: '', category: 'farming-tips' });
+      setShowNewPostModal(false);
+    }
   };
 
   const handlePostClick = (post) => {
@@ -144,37 +174,64 @@ const CommunityHub = () => {
     setShowReplies(true);
   };
 
-  const handleAddReply = (e) => {
+  const handleAddReply = async (e) => {
     e.preventDefault();
     if (!newReply.trim()) return;
     
-    const reply = {
-      id: selectedPost.replies.length + 1,
-      author: 'You',
-      content: newReply,
-      timeAgo: 'Just now'
-    };
-    
-    const updatedPosts = posts.map(post => 
-      post.id === selectedPost.id 
-        ? { ...post, replies: [...post.replies, reply] }
-        : post
-    );
-    
-    setPosts(updatedPosts);
-    setSelectedPost({ ...selectedPost, replies: [...selectedPost.replies, reply] });
-    setNewReply('');
+    try {
+      const response = await apiService.addReply(selectedPost.id, { content: newReply });
+      const updatedPosts = posts.map(post => 
+        post.id === selectedPost.id 
+          ? { ...post, replies: [...post.replies, response.reply] }
+          : post
+      );
+      setPosts(updatedPosts);
+      setSelectedPost({ ...selectedPost, replies: [...selectedPost.replies, response.reply] });
+      setNewReply('');
+    } catch (error) {
+      console.error('Failed to add reply:', error);
+      // Fallback to local state
+      const reply = {
+        id: selectedPost.replies.length + 1,
+        author: 'You',
+        content: newReply,
+        timeAgo: 'Just now'
+      };
+      const updatedPosts = posts.map(post => 
+        post.id === selectedPost.id 
+          ? { ...post, replies: [...post.replies, reply] }
+          : post
+      );
+      setPosts(updatedPosts);
+      setSelectedPost({ ...selectedPost, replies: [...selectedPost.replies, reply] });
+      setNewReply('');
+    }
   };
 
-  const handleLike = (postId) => {
-    const updatedPosts = posts.map(post => 
-      post.id === postId 
-        ? { ...post, likes: post.likes + 1 }
-        : post
-    );
-    setPosts(updatedPosts);
-    if (selectedPost && selectedPost.id === postId) {
-      setSelectedPost({ ...selectedPost, likes: selectedPost.likes + 1 });
+  const handleLike = async (postId) => {
+    try {
+      await apiService.likePost(postId);
+      const updatedPosts = posts.map(post => 
+        post.id === postId 
+          ? { ...post, likes: post.likes + 1 }
+          : post
+      );
+      setPosts(updatedPosts);
+      if (selectedPost && selectedPost.id === postId) {
+        setSelectedPost({ ...selectedPost, likes: selectedPost.likes + 1 });
+      }
+    } catch (error) {
+      console.error('Failed to like post:', error);
+      // Fallback to local state
+      const updatedPosts = posts.map(post => 
+        post.id === postId 
+          ? { ...post, likes: post.likes + 1 }
+          : post
+      );
+      setPosts(updatedPosts);
+      if (selectedPost && selectedPost.id === postId) {
+        setSelectedPost({ ...selectedPost, likes: selectedPost.likes + 1 });
+      }
     }
   };
 
@@ -253,8 +310,14 @@ const CommunityHub = () => {
 
           {/* Posts */}
           <div className="lg:col-span-3">
-            <div className="space-y-6">
-              {filteredPosts.map(post => (
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">⏳</div>
+                <p className="text-gray-500">Loading discussions...</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {filteredPosts.map(post => (
                 <div key={post.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePostClick(post)}>
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
@@ -293,12 +356,13 @@ const CommunityHub = () => {
                 </div>
               ))}
 
-              {filteredPosts.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">No discussions found matching your criteria.</p>
-                </div>
-              )}
-            </div>
+                {filteredPosts.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg">No discussions found matching your criteria.</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
