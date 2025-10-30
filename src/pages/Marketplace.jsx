@@ -51,6 +51,9 @@ const Marketplace = () => {
     return imageMap[category][productName] || '/images/tomatoes.jpeg';
   };
 
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const marketData = {
     crops: [
       { id: 1, name: 'Potatoes', location: 'Nyandaria', price: 35, unit: 'per kg', seller: 'John Kamau', stock: 500, rating: 4.5 },
@@ -80,12 +83,7 @@ const Marketplace = () => {
     ].map(product => ({ ...product, image: getProductImage(product.name, 'livestock') }))
   };
 
-
-
   const locations = [...new Set(marketData[activeTab].map(p => p.location))];
-
-  const [allProducts, setAllProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadProducts();
@@ -303,7 +301,7 @@ const Marketplace = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map(product => {
+            {filteredProducts.map(product => {
             const isInWishlist = wishlist.find(item => item.id === product.id);
             const isRecentlyAdded = recentlyAdded?.id === product.id;
             
