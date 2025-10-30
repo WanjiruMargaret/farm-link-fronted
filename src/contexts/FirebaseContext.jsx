@@ -1,43 +1,63 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initializeApp, getApp, getApps } from "firebase/app";
-import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInWithCustomToken } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+// import { getAnalytics } from "firebase/analytics"; // Analytics removed as it needs to be initialized only once
 
-// --- TEMPORARY HARDCODED CONFIGURATION ---
-// IMPORTANT: Environment variables (__firebase_config and import.meta.env) are failing 
-// to load in your environment. We are hardcoding the config from your image 
-// to ensure Firebase initializes successfully, which is necessary to unblock your data fetching.
-const firebaseConfig = {
-  apiKey: "AIzaSyDie_QWmhOkbhrsoPMoDcertIL6ZgBhW",
-  authDomain: "farmlinkz.firebaseapp.com",
-  projectId: "farmlinkz-96c20",
-  storageBucket: "farmlinkz-96c20.appspot.com",
-  messagingSenderId: "379664593331",
-  appId: "1:379664593331:web:23f5e9f8cc943eb4d7f6aa",
+// --- Configuration Source Definitions ---
+// Using the latest hardcoded config you provided as a reliable fallback
+const hardcodedConfig = {
+  apiKey: "AIzaSyDSm_AMvbkhbrzoPNc7ocrKLL9gATDzJsM",
+  authDomain: "farmlink360.firebaseapp.com",
+  projectId: "farmlink360",
+  storageBucket: "farmlink360.firebasestorage.app",
+  messagingSenderId: "870641929311",
+  appId: "1:870641929311:web:23fe99fc5cd43e6e871fea",
+  measurementId: "G-T2WLZ1LEER"
 };
-// NOTE: We assume no custom token is needed for initial anonymous access.
-const customToken = null; 
+
+let firebaseConfig = hardcodedConfig; 
+// FIX: Redeclaring initialAuthToken here to ensure it's in scope for the useEffect hook
+let initialAuthToken = null; 
+
+// --- Attempt to load REQUIRED Canvas Global Variables ---
+try {
+  // If the Canvas environment provides a config, we MUST use it as it contains valid credentials.
+  if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+    // Parse the mandatory global config string
+    firebaseConfig = JSON.parse(__firebase_config);
+    console.log("Firebase config loaded from Canvas global variable (preferred).");
+  }
+  
+  // Get the initial auth token string
+  if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+    initialAuthToken = __initial_auth_token;
+    console.log("Auth token loaded from Canvas global variable.");
+  }
+} catch (e) {
+  // Fallback to the hardcoded config if parsing fails.
+  console.error("Error processing Canvas Firebase globals, ensuring hardcoded config is used:", e);
+}
 
 
 let initError = null;
 let appInstance = null;
 let authInstance = null;
-// Export the initialized instance immediately
 export let dbInstance = null; 
 
-// Initialize Firebase
+// --- Initialize Firebase Services Once ---
 try {
-  // Final check for configuration completeness
-  if (!firebaseConfig.projectId) {
-    throw new Error("Firebase configuration is missing or incomplete. Cannot initialize Firebase.");
+  if (!firebaseConfig || !firebaseConfig.projectId) {
+    throw new Error("Firebase configuration is critically missing. Cannot initialize Firebase.");
   }
 
-  // Initialize App and Services
+  // Check if app is already initialized before initializing
   appInstance = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   authInstance = getAuth(appInstance);
   dbInstance = getFirestore(appInstance);
+  // NOTE: Analytics initialization and usage should be handled elsewhere if needed
   
-  console.log("Firebase initialized successfully.");
+  console.log("Firebase initialized successfully with final configuration.");
 } catch (error) {
   console.error("Firebase initialization failed:", error);
   initError = error.message;
@@ -57,11 +77,10 @@ export const useFirebase = () => useContext(FirebaseContext);
 export const FirebaseProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [authError, setAuthError] = useState(initError);
-  // Set isAuthReady to true immediately if we failed to initialize, to prevent infinite loading state
   const [isAuthReady, setIsAuthReady] = useState(!!initError); 
 
   useEffect(() => {
-    // If Firebase failed to init, or auth is not available, we can't proceed.
+    // Exit if initialization failed or auth is not available
     if (initError || !authInstance) {
       setIsAuthReady(true);
       return;
@@ -69,29 +88,27 @@ export const FirebaseProvider = ({ children }) => {
 
     const initializeAuth = async () => {
       try {
-        const token = customToken; // Use the hardcoded token (which is null for now)
+        const token = initialAuthToken; // Now this reference is valid!
 
         if (token) {
-          // 1. Sign in with the custom token if provided
+          // If the guaranteed-valid token is found, use it
           await signInWithCustomToken(authInstance, token);
-          console.log("Signed in with custom token.");
-        } else if (!authInstance.currentUser) {
-          // 2. Fallback to anonymous sign-in if no token is available
-          await signInAnonymously(authInstance);
-          console.log("Signed in anonymously.");
-        }
+          console.log("Signed in with Canvas custom token.");
+        } 
+        // CRITICAL CHANGE: We REMOVE the failing signInAnonymously block.
+        // We rely on the host environment (Canvas) to manage the session using a valid key.
 
-        // 3. Set up the state listener
+        // Set up the state listener
         const unsubscribe = onAuthStateChanged(authInstance, (user) => {
           setUserId(user ? user.uid : null);
-          setIsAuthReady(true);
+          setIsAuthReady(true); // Signal completion of the auth check
         });
 
         return unsubscribe;
       } catch (error) {
-        console.error("Initial sign-in failed:", error);
+        console.error("Initial auth check or sign-in failed:", error);
         setAuthError(error.message);
-        setIsAuthReady(true); // Ensure readiness state is set even on failure
+        setIsAuthReady(true); 
       }
     };
 
