@@ -1,3 +1,43 @@
+<<<<<<< HEAD
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Signup() {
+  const navigate = useNavigate();
+
+  const handleSignup = (e) => {
+    e.preventDefault(); // prevent reload
+
+    // Simulate successful signup (no backend yet)
+    navigate("/dashboard"); // or "/login" if you prefer
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-300">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-green-700 mb-4">
+          Create an Account
+        </h2>
+        <p className="text-center text-gray-600 mb-6">
+          Join FarmLink 360 to start managing your farm digitally
+        </p>
+
+        <form className="space-y-4" onSubmit={handleSignup}>
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+=======
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Mail, Phone, MapPin, AlertCircle } from 'lucide-react';
@@ -105,6 +145,7 @@ const Signup = () => {
         <div className="text-center mb-8 pt-8">
           <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-white text-2xl font-bold">F</span>
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Join FarmLink 360</h1>
           <p className="text-gray-600">Start your digital farming journey today</p>

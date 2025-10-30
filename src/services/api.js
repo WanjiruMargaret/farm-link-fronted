@@ -1,3 +1,22 @@
+<<<<<<< HEAD
+import axios from "axios";
+import { BASE_URL } from "../utils/constants";
+
+const api = axios.create({
+  baseURL: BASE_URL,
+});
+
+// Attach token automatically if user is logged in
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default api;
+=======
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 class ApiService {
@@ -108,3 +127,4 @@ class ApiService {
 }
 
 export default new ApiService();
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849

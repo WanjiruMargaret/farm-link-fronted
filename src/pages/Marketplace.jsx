@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+import React, { useState, useEffect } from 'react'; // 👈 1. Import useEffect
+import { Search, MapPin, ShoppingCart } from 'lucide-react';
+import Navbar from '../components/Navbar';
+import { fetchCrops } from '../services/marketService'; // 👈 2. Import the service function
+=======
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, ShoppingCart, Filter, SlidersHorizontal, Heart, Star, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,10 +12,19 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import Navbar from '../components/Navbar';
 import Toast from '../components/Toast';
 import apiService from '../services/api';
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
 
 const Marketplace = () => {
   const [activeTab, setActiveTab] = useState('crops');
   const [searchTerm, setSearchTerm] = useState('');
+<<<<<<< HEAD
+  const [cart, setCart] = useState([]);
+  
+  // NEW STATE: To hold data fetched from the API
+  const [fetchedCropsData, setFetchedCropsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+=======
   const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [selectedLocation, setSelectedLocation] = useState('');
@@ -17,9 +32,13 @@ const Marketplace = () => {
   const [wishlist, setWishlist] = useLocalStorage('farmlink-wishlist', []);
   const [toast, setToast] = useState(null);
   const { addToCart, getTotalItems, recentlyAdded } = useCart();
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
 
-  // Image mapping for products
+  // Hardcoded data for livestock and image map will remain for now
+  // You will replace livestock with a separate API call later.
+  
   const getProductImage = (productName, category) => {
+    // ... (Your existing getProductImage function remains here)
     const imageMap = {
       crops: {
         'Potatoes': '/images/potatoes.jpeg',
@@ -48,39 +67,59 @@ const Marketplace = () => {
         'Turkey': '/images/turkey.jpeg'
       }
     };
-    return imageMap[category][productName] || '/images/tomatoes.jpeg';
+    return imageMap[category]?.[productName] || '/images/default.jpeg'; // Use a default image if not found
   };
+  
+  // Hardcoded Livestock Data (will remain until we fetch it dynamically too)
+  const hardcodedLivestock = [
+    { id: 5, name: 'Dairy Cow (Friesian)', location: 'Nakuru', price: 85000, unit: 'per animal', seller: 'Samuel Kiprop', stock: 5, rating: 4.7 },
+    { id: 6, name: 'Beef Cattle (Boran)', location: 'Kajiado', price: 65000, unit: 'per animal', seller: 'David Maasai', stock: 8, rating: 4.5 },
+    { id: 7, name: 'Dairy Goat', location: 'Machakos', price: 7500, unit: 'per animal', seller: 'Agnes Mutua', stock: 12, rating: 4.6 },
+    { id: 8, name: 'Sheep (Dorper)', location: 'Laikipia', price: 8500, unit: 'per animal', seller: 'Joseph Kariuki', stock: 15, rating: 4.4 },
+    { id: 17, name: 'Chicken (Layers)', location: 'Kiambu', price: 800, unit: 'per bird', seller: 'Faith Wanjiku', stock: 50, rating: 4.8 },
+    { id: 18, name: 'Broiler Chicken', location: 'Thika', price: 600, unit: 'per bird', seller: 'Peter Kamau', stock: 100, rating: 4.7 },
+    { id: 19, name: 'Pig (Large White)', location: 'Nyeri', price: 15000, unit: 'per animal', seller: 'John Mwangi', stock: 6, rating: 4.5 },
+    { id: 20, name: 'Rabbit', location: 'Meru', price: 1200, unit: 'per animal', seller: 'Grace Muthoni', stock: 25, rating: 4.6 },
+    { id: 21, name: 'Duck', location: 'Kisumu', price: 1500, unit: 'per bird', seller: 'Michael Otieno', stock: 20, rating: 4.3 },
+    { id: 22, name: 'Turkey', location: 'Nandi', price: 2500, unit: 'per bird', seller: 'Sarah Chebet', stock: 10, rating: 4.7 }
+  ].map(product => ({ ...product, image: getProductImage(product.name, 'livestock') }));
 
+<<<<<<< HEAD
+
+  // 🔑 KEY IMPLEMENTATION: useEffect for data fetching
+  useEffect(() => {
+    async function loadCrops() {
+        setLoading(true);
+        try {
+            // Call the service function to get data from the backend
+            const data = await fetchCrops();
+            // Store the fetched data in state
+            setFetchedCropsData(data.map(product => ({ 
+                ...product, 
+                // Add the image mapping to the fetched data
+                image: getProductImage(product.name, 'crops') 
+            })));
+            setError(null);
+        } catch (err) {
+            console.error("Failed to fetch crops:", err);
+            setError("Failed to load crops from the server. Check your backend connection.");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    loadCrops();
+  }, []); // Empty dependency array means this runs only once on mount
+
+  // Combine fetched crops and hardcoded livestock into one object for display logic
+=======
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
   const marketData = {
-    crops: [
-      { id: 1, name: 'Potatoes', location: 'Nyandaria', price: 35, unit: 'per kg', seller: 'John Kamau', stock: 500, rating: 4.5 },
-      { id: 2, name: 'Onions', location: 'Nairobi', price: 50, unit: 'per kg', seller: 'Mary Wanjiku', stock: 300, rating: 4.8 },
-      { id: 3, name: 'Cabbage', location: 'Kiambu', price: 30, unit: 'per kg', seller: 'Peter Mwangi', stock: 200, rating: 4.2 },
-      { id: 4, name: 'Tomatoes', location: 'Meru', price: 60, unit: 'per kg', seller: 'Grace Njeri', stock: 150, rating: 4.9 },
-      { id: 9, name: 'Maize', location: 'Eldoret', price: 40, unit: 'per kg', seller: 'Samuel Kiptoo', stock: 1000, rating: 4.6 },
-      { id: 10, name: 'Beans', location: 'Embu', price: 120, unit: 'per kg', seller: 'Alice Wambui', stock: 80, rating: 4.7 },
-      { id: 11, name: 'Carrots', location: 'Nyandarua', price: 45, unit: 'per kg', seller: 'James Maina', stock: 250, rating: 4.3 },
-      { id: 12, name: 'Spinach', location: 'Kiambu', price: 25, unit: 'per bunch', seller: 'Rose Njoki', stock: 100, rating: 4.4 },
-      { id: 13, name: 'Kale (Sukuma)', location: 'Nairobi', price: 20, unit: 'per bunch', seller: 'Paul Ochieng', stock: 150, rating: 4.5 },
-      { id: 14, name: 'Sweet Potatoes', location: 'Busia', price: 55, unit: 'per kg', seller: 'Margaret Akinyi', stock: 400, rating: 4.6 },
-      { id: 15, name: 'Bananas', location: 'Kisii', price: 80, unit: 'per bunch', seller: 'David Nyong\'o', stock: 60, rating: 4.8 },
-      { id: 16, name: 'Avocados', location: 'Murang\'a', price: 15, unit: 'per piece', seller: 'Lucy Wanjiru', stock: 200, rating: 4.9 }
-    ].map(product => ({ ...product, image: getProductImage(product.name, 'crops') })),
-    livestock: [
-      { id: 5, name: 'Dairy Cow (Friesian)', location: 'Nakuru', price: 85000, unit: 'per animal', seller: 'Samuel Kiprop', stock: 5, rating: 4.7 },
-      { id: 6, name: 'Beef Cattle (Boran)', location: 'Kajiado', price: 65000, unit: 'per animal', seller: 'David Maasai', stock: 8, rating: 4.5 },
-      { id: 7, name: 'Dairy Goat', location: 'Machakos', price: 7500, unit: 'per animal', seller: 'Agnes Mutua', stock: 12, rating: 4.6 },
-      { id: 8, name: 'Sheep (Dorper)', location: 'Laikipia', price: 8500, unit: 'per animal', seller: 'Joseph Kariuki', stock: 15, rating: 4.4 },
-      { id: 17, name: 'Chicken (Layers)', location: 'Kiambu', price: 800, unit: 'per bird', seller: 'Faith Wanjiku', stock: 50, rating: 4.8 },
-      { id: 18, name: 'Broiler Chicken', location: 'Thika', price: 600, unit: 'per bird', seller: 'Peter Kamau', stock: 100, rating: 4.7 },
-      { id: 19, name: 'Pig (Large White)', location: 'Nyeri', price: 15000, unit: 'per animal', seller: 'John Mwangi', stock: 6, rating: 4.5 },
-      { id: 20, name: 'Rabbit', location: 'Meru', price: 1200, unit: 'per animal', seller: 'Grace Muthoni', stock: 25, rating: 4.6 },
-      { id: 21, name: 'Duck', location: 'Kisumu', price: 1500, unit: 'per bird', seller: 'Michael Otieno', stock: 20, rating: 4.3 },
-      { id: 22, name: 'Turkey', location: 'Nandi', price: 2500, unit: 'per bird', seller: 'Sarah Chebet', stock: 10, rating: 4.7 }
-    ].map(product => ({ ...product, image: getProductImage(product.name, 'livestock') }))
+    crops: fetchedCropsData, // Use the fetched data here
+    livestock: hardcodedLivestock
   };
 
   const locations = [...new Set(marketData[activeTab].map(p => p.location))];
@@ -101,6 +140,35 @@ const Marketplace = () => {
     }
   };
 
+<<<<<<< HEAD
+  // Check if marketData[activeTab] is an array before calling filter
+  const productsToFilter = Array.isArray(marketData[activeTab]) ? marketData[activeTab] : [];
+
+  const filteredProducts = productsToFilter.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  // -------------------------------------------------------------
+  // RENDERING LOGIC (The return block)
+  // -------------------------------------------------------------
+
+  if (loading) {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <p className="text-xl text-green-600">Loading marketplace listings...</p>
+        </div>
+    );
+  }
+
+  if (error) {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <p className="text-xl text-red-600">Error: {error}</p>
+        </div>
+    );
+  }
+=======
   const currentProducts = allProducts.length > 0 ? allProducts : marketData[activeTab];
   const filteredProducts = currentProducts
     .filter(product => {
@@ -138,10 +206,11 @@ const Marketplace = () => {
     addToCart(product);
     setToast({ message: `${product.name} added to cart!`, type: 'success' });
   };
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* ... (Your existing Header and Navbar remain here) ... */}
       <header className="bg-green-600 text-white p-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">FarmLink Marketplace</h1>
@@ -160,7 +229,11 @@ const Marketplace = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
+<<<<<<< HEAD
+        {/* ... (Your existing Search Bar remains here) ... */}
+=======
         {/* Search and Filters */}
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
         <div className="mb-8">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="relative flex-1">
@@ -248,7 +321,7 @@ const Marketplace = () => {
           )}
         </div>
 
-        {/* Stats and Tabs */}
+        {/* Stats and Tabs - NOTE: We use the *actual* length of fetchedCropsData */}
         <div className="mb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white p-4 rounded-lg shadow-sm text-center">
@@ -259,6 +332,7 @@ const Marketplace = () => {
               <div className="text-2xl font-bold text-blue-600">{marketData.livestock.length}</div>
               <div className="text-sm text-gray-600">Livestock</div>
             </div>
+            {/* ... (Remaining Stats remain here) ... */}
             <div className="bg-white p-4 rounded-lg shadow-sm text-center">
               <div className="text-2xl font-bold text-purple-600">{getTotalItems()}</div>
               <div className="text-sm text-gray-600">Cart Items</div>
@@ -293,6 +367,22 @@ const Marketplace = () => {
           </div>
         </div>
 
+<<<<<<< HEAD
+        {/* Products Grid - This part maps over the filteredProducts as before */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.map(product => (
+            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h3>
+                <div className="flex items-center text-gray-600 mb-2">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  <span>{product.location}</span>
+=======
         {/* Products Grid */}
         {loading ? (
           <div className="text-center py-12">
@@ -331,6 +421,7 @@ const Marketplace = () => {
                       Great Deal
                     </div>
                   )}
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h3>
@@ -398,7 +489,11 @@ const Marketplace = () => {
           </div>
         )}
 
+<<<<<<< HEAD
+        {filteredProducts.length === 0 && !loading && (
+=======
         {!loading && filteredProducts.length === 0 && (
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
