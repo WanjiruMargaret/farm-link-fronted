@@ -1,17 +1,38 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react'; // 👈 1. Import useEffect
 import { Search, MapPin, ShoppingCart } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { fetchCrops } from '../services/marketService'; // 👈 2. Import the service function
+=======
+import React, { useState, useEffect } from 'react';
+import { Search, MapPin, ShoppingCart, Filter, SlidersHorizontal, Heart, Star, Truck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import Navbar from '../components/Navbar';
+import Toast from '../components/Toast';
+import apiService from '../services/api';
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
 
 const Marketplace = () => {
   const [activeTab, setActiveTab] = useState('crops');
   const [searchTerm, setSearchTerm] = useState('');
+<<<<<<< HEAD
   const [cart, setCart] = useState([]);
   
   // NEW STATE: To hold data fetched from the API
   const [fetchedCropsData, setFetchedCropsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+=======
+  const [sortBy, setSortBy] = useState('name');
+  const [priceRange, setPriceRange] = useState([0, 100000]);
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [wishlist, setWishlist] = useLocalStorage('farmlink-wishlist', []);
+  const [toast, setToast] = useState(null);
+  const { addToCart, getTotalItems, recentlyAdded } = useCart();
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
 
   // Hardcoded data for livestock and image map will remain for now
   // You will replace livestock with a separate API call later.
@@ -63,6 +84,7 @@ const Marketplace = () => {
     { id: 22, name: 'Turkey', location: 'Nandi', price: 2500, unit: 'per bird', seller: 'Sarah Chebet', stock: 10, rating: 4.7 }
   ].map(product => ({ ...product, image: getProductImage(product.name, 'livestock') }));
 
+<<<<<<< HEAD
 
   // 🔑 KEY IMPLEMENTATION: useEffect for data fetching
   useEffect(() => {
@@ -90,15 +112,35 @@ const Marketplace = () => {
   }, []); // Empty dependency array means this runs only once on mount
 
   // Combine fetched crops and hardcoded livestock into one object for display logic
+=======
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
   const marketData = {
     crops: fetchedCropsData, // Use the fetched data here
     livestock: hardcodedLivestock
   };
 
-  const addToCart = (product) => {
-    setCart([...cart, product]);
+  const locations = [...new Set(marketData[activeTab].map(p => p.location))];
+
+  useEffect(() => {
+    loadProducts();
+  }, [activeTab]);
+
+  const loadProducts = async () => {
+    try {
+      const response = await apiService.getAllProducts(activeTab);
+      setAllProducts(response.products || []);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      setAllProducts(marketData[activeTab] || []);
+    } finally {
+      setLoading(false);
+    }
   };
 
+<<<<<<< HEAD
   // Check if marketData[activeTab] is an array before calling filter
   const productsToFilter = Array.isArray(marketData[activeTab]) ? marketData[activeTab] : [];
 
@@ -126,6 +168,45 @@ const Marketplace = () => {
         </div>
     );
   }
+=======
+  const currentProducts = allProducts.length > 0 ? allProducts : marketData[activeTab];
+  const filteredProducts = currentProducts
+    .filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.seller.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+      const matchesLocation = !selectedLocation || product.location === selectedLocation;
+      return matchesSearch && matchesPrice && matchesLocation;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low': return a.price - b.price;
+        case 'price-high': return b.price - a.price;
+        case 'rating': return b.rating - a.rating;
+        case 'name': return a.name.localeCompare(b.name);
+        default: return 0;
+      }
+    });
+
+  const toggleWishlist = (product) => {
+    setWishlist(prev => {
+      const exists = prev.find(item => item.id === product.id);
+      if (exists) {
+        setToast({ message: 'Removed from wishlist', type: 'success' });
+        return prev.filter(item => item.id !== product.id);
+      } else {
+        setToast({ message: 'Added to wishlist', type: 'success' });
+        return [...prev, product];
+      }
+    });
+  };
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    setToast({ message: `${product.name} added to cart!`, type: 'success' });
+  };
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -135,31 +216,109 @@ const Marketplace = () => {
           <h1 className="text-2xl font-bold">FarmLink Marketplace</h1>
           <div className="flex items-center space-x-4">
             <Navbar />
-            <div className="relative">
-              <ShoppingCart className="w-6 h-6" />
-              {cart.length > 0 && (
+            <Link to="/cart" className="relative">
+              <ShoppingCart className="w-6 h-6 hover:text-green-200 transition" />
+              {getTotalItems() > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                  {cart.length}
+                  {getTotalItems()}
                 </span>
               )}
-            </div>
+            </Link>
           </div>
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
+<<<<<<< HEAD
         {/* ... (Your existing Search Bar remains here) ... */}
+=======
+        {/* Search and Filters */}
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
         <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search products or locations..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products, sellers, or locations..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="name">Sort by Name</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+              </select>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                <span>Filters</span>
+              </button>
+            </div>
           </div>
+
+          {/* Advanced Filters */}
+          {showFilters && (
+            <div className="bg-white p-6 rounded-lg border border-gray-200 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                    <span>-</span>
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 100000])}
+                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                  <select
+                    value={selectedLocation}
+                    onChange={(e) => setSelectedLocation(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">All Locations</option>
+                    {locations.map(location => (
+                      <option key={location} value={location}>{location}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <button
+                    onClick={() => {
+                      setPriceRange([0, 100000]);
+                      setSelectedLocation('');
+                      setSearchTerm('');
+                    }}
+                    className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Stats and Tabs - NOTE: We use the *actual* length of fetchedCropsData */}
@@ -175,7 +334,7 @@ const Marketplace = () => {
             </div>
             {/* ... (Remaining Stats remain here) ... */}
             <div className="bg-white p-4 rounded-lg shadow-sm text-center">
-              <div className="text-2xl font-bold text-purple-600">{cart.length}</div>
+              <div className="text-2xl font-bold text-purple-600">{getTotalItems()}</div>
               <div className="text-sm text-gray-600">Cart Items</div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow-sm text-center">
@@ -208,6 +367,7 @@ const Marketplace = () => {
           </div>
         </div>
 
+<<<<<<< HEAD
         {/* Products Grid - This part maps over the filteredProducts as before */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map(product => (
@@ -222,42 +382,143 @@ const Marketplace = () => {
                 <div className="flex items-center text-gray-600 mb-2">
                   <MapPin className="w-4 h-4 mr-1" />
                   <span>{product.location}</span>
+=======
+        {/* Products Grid */}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">⏳</div>
+            <p className="text-gray-500">Loading products...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map(product => {
+            const isInWishlist = wishlist.find(item => item.id === product.id);
+            const isRecentlyAdded = recentlyAdded?.id === product.id;
+            
+            return (
+              <div key={product.id} className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 ${isRecentlyAdded ? 'ring-2 ring-green-500' : ''}`}>
+                <div className="relative">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <button
+                    onClick={() => toggleWishlist(product)}
+                    className={`absolute top-3 right-3 p-2 rounded-full transition-colors ${
+                      isInWishlist ? 'bg-red-500 text-white' : 'bg-white text-gray-400 hover:text-red-500'
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-current' : ''}`} />
+                  </button>
+                  {product.stock < 10 && product.stock > 0 && (
+                    <div className="absolute top-3 left-3 bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">
+                      Low Stock
+                    </div>
+                  )}
+                  {product.price < 1000 && (
+                    <div className="absolute bottom-3 left-3 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                      Great Deal
+                    </div>
+                  )}
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
                 </div>
-                <p className="text-sm text-gray-600 mb-3">Seller: {product.seller}</p>
-                <div className="mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-500">Stock: {product.stock} {product.unit.includes('kg') ? 'kg' : product.unit.includes('bunch') ? 'bunches' : 'available'}</span>
-                    <div className="flex items-center">
-                      <span className="text-yellow-500">★</span>
-                      <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
-                    </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h3>
+                  <div className="flex items-center text-gray-600 mb-2">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    <span>{product.location}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span className="text-2xl font-bold text-green-600">KES {product.price.toLocaleString()}</span>
-                      <span className="text-gray-500 ml-1">{product.unit}</span>
+                  <p className="text-sm text-gray-600 mb-3">Seller: {product.seller}</p>
+                  
+                  {/* Rating */}
+                  <div className="flex items-center mb-3">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
                     </div>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center space-x-2"
-                      disabled={product.stock === 0}
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>{product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}</span>
-                    </button>
+                    <span className="text-sm text-gray-600 ml-2">({product.rating})</span>
+                    <span className="text-sm text-gray-500 ml-2">• {Math.floor(Math.random() * 50) + 10} reviews</span>
+                  </div>
+
+                  {/* Stock and Delivery */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-sm ${
+                        product.stock === 0 ? 'text-red-500' : 
+                        product.stock < 10 ? 'text-orange-500' : 'text-green-500'
+                      }`}>
+                        {product.stock === 0 ? 'Out of Stock' : 
+                         product.stock < 10 ? `Only ${product.stock} left` : 'In Stock'}
+                      </span>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Truck className="w-3 h-3 mr-1" />
+                        <span>2-day delivery</span>
+                      </div>
+                    </div>
+                    
+                    {/* Price */}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-2xl font-bold text-green-600">KES {product.price.toLocaleString()}</span>
+                        <span className="text-gray-500 ml-1">{product.unit}</span>
+                        {product.price > 50000 && (
+                          <div className="text-xs text-green-600">Free shipping</div>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={product.stock === 0}
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        <span>{product.stock === 0 ? 'Unavailable' : 'Add to Cart'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            );
+          })}
+          </div>
+        )}
 
+<<<<<<< HEAD
         {filteredProducts.length === 0 && !loading && (
+=======
+        {!loading && filteredProducts.length === 0 && (
+>>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No products found matching your search.</p>
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
+            <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setPriceRange([0, 100000]);
+                setSelectedLocation('');
+              }}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+            >
+              Clear All Filters
+            </button>
           </div>
         )}
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

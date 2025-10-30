@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { TrendingUp, Users, ShoppingBag, DollarSign, Target, Globe, Award, BarChart3 } from "lucide-react";
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import WeatherWidget from '../components/WeatherWidget';
 
 export default function Dashboard() {
   const [timeframe, setTimeframe] = useState('month');
@@ -95,8 +97,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Platform Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Platform Overview & Weather */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <WeatherWidget location="Nairobi, Kenya" />
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-bold text-gray-900 mb-4">Business Model</h3>
             <div className="space-y-4">
@@ -143,6 +146,22 @@ export default function Dashboard() {
                 <span className="font-bold text-green-600">✓ Optimized</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* My Products Link for Farmers */}
+        <div className="bg-gradient-to-r from-blue-500 to-green-500 text-white p-6 rounded-lg shadow-md mb-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-xl font-bold mb-2">Sell Your Products</h3>
+              <p className="text-blue-100">List your crops and livestock on our marketplace</p>
+            </div>
+            <Link 
+              to="/my-products" 
+              className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition"
+            >
+              Manage Products
+            </Link>
           </div>
         </div>
 
