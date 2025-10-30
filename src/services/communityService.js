@@ -1,36 +1,38 @@
-// src/services/communityService.js (Finalized)
-
-import api from "./api"; // Import the configured Axios instance
+import api from "./api"; // Ensure this path is correct
 
 /**
- * Fetches the list of all posts for the Community Hub.
- * Corresponds to: GET /api/posts
- * @returns {Promise<Array>} A promise that resolves to an array of post objects.
+ * Fetches posts from the community hub.
+ * @param {string} category - The category to filter by (e.g., 'all', 'pests').
+ * @param {number} page - The current page number.
+ * @param {number} limit - The number of posts per page.
+ * @returns {Promise<Object>} A promise that resolves to an object containing posts and pagination data.
  */
-export async function fetchPosts() {
-    try {
-        // Confirmed path from your post_routes.py blueprint registration
-        const response = await api.get("/posts"); 
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching posts:", error.response ? error.response.data : error.message);
-        throw error;
-    }
+export async function fetchPosts({ category = 'all', page = 1, limit = 10 }) {
+  try {
+    // FIX: Change api.get to api.request
+    const params = new URLSearchParams({ category, page, limit });
+    const posts = await api.request(`/community/posts?${params.toString()}`);
+    return posts;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw new Error("Failed to load community posts.");
+  }
 }
 
 /**
- * Submits a new post to the community hub.
- * Corresponds to: POST /api/posts
- * @param {object} postData - Requires 'title', 'content', and 'user_id'.
- * @returns {Promise<object>} A promise that resolves to the newly created post object.
+ * Creates a new community post.
+ * @param {Object} postData - The data for the new post.
+ * @returns {Promise<Object>} The created post object.
  */
 export async function createPost(postData) {
-    try {
-        // Confirmed path from your post_routes.py blueprint registration
-        const response = await api.post("/posts", postData); 
-        return response.data;
-    } catch (error) {
-        console.error("Error creating post:", error.response ? error.response.data : error.message);
-        throw new Error(error.response?.data?.message || "Failed to submit new post.");
-    }
+  try {
+    const newPost = await api.request('/community/posts', {
+      method: 'POST',
+      body: JSON.stringify(postData),
+    });
+    return newPost;
+  } catch (error) {
+    console.error("Error creating post:", error);
+    throw new Error("Failed to create new community post.");
+  }
 }

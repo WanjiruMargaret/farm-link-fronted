@@ -1,48 +1,9 @@
-<<<<<<< HEAD
-import React from "react";
-import { useNavigate } from "react-router-dom";
-
-export default function Signup() {
-  const navigate = useNavigate();
-
-  const handleSignup = (e) => {
-    e.preventDefault(); // prevent reload
-
-    // Simulate successful signup (no backend yet)
-    navigate("/dashboard"); // or "/login" if you prefer
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-300">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-green-700 mb-4">
-          Create an Account
-        </h2>
-        <p className="text-center text-gray-600 mb-6">
-          Join FarmLink 360 to start managing your farm digitally
-        </p>
-
-        <form className="space-y-4" onSubmit={handleSignup}>
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              required
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-=======
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Mail, Phone, MapPin, AlertCircle } from 'lucide-react';
-import LoadingSpinner from '../components/LoadingSpinner';
-import Toast from '../components/Toast';
+// Assuming these custom components are in '../components'
+import LoadingSpinner from '../components/LoadingSpinner'; 
+import Toast from '../components/Toast'; 
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -62,14 +23,16 @@ const Signup = () => {
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
+  // Kenyan counties list for the location dropdown
   const counties = [
     'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Meru', 'Thika', 'Kiambu',
-    'Machakos', 'Nyeri', 'Embu', 'Kakamega', 'Busia', 'Kisii', 'Nandi', 'Laikipia'
+    'Machakos', 'Nyeri', 'Embu', 'Kakamea', 'Busia', 'Kisii', 'Nandi', 'Laikipia'
   ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error for the field being changed
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -88,6 +51,7 @@ const Signup = () => {
       newErrors.email = 'Please enter a valid email';
     }
     
+    // Basic Kenyan phone number validation (starting with +254 or 0, followed by 7, 8, or 9 and 8 more digits)
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
     } else if (!/^(\+254|0)[7-9]\d{8}$/.test(formData.phone)) {
@@ -119,10 +83,10 @@ const Signup = () => {
     
     setLoading(true);
     try {
-      // Simulate API call
+      // Simulate API call for registration
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Save user data
+      // Simulate saving user data to local storage on success
       localStorage.setItem('farmlink-user', JSON.stringify({
         ...formData,
         id: Date.now(),
@@ -130,7 +94,8 @@ const Signup = () => {
       }));
       
       setToast({ message: 'Account created successfully! Redirecting...', type: 'success' });
-      setTimeout(() => navigate('/marketplace'), 1000);
+      // Redirect to a dashboard or marketplace after a delay
+      setTimeout(() => navigate('/marketplace'), 1000); 
     } catch (error) {
       setToast({ message: 'Registration failed. Please try again.', type: 'error' });
     } finally {
@@ -145,7 +110,6 @@ const Signup = () => {
         <div className="text-center mb-8 pt-8">
           <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-white text-2xl font-bold">F</span>
->>>>>>> 1d2cab2a3ed6cea1893f1f12ded2787c2a1c6849
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Join FarmLink 360</h1>
           <p className="text-gray-600">Start your digital farming journey today</p>
@@ -153,7 +117,7 @@ const Signup = () => {
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
+            {/* Personal Information Fields (Full Name, Email) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
@@ -202,6 +166,7 @@ const Signup = () => {
               </div>
             </div>
 
+            {/* Contact and Location Fields (Phone, Location) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
@@ -253,7 +218,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Farm Information */}
+            {/* Farm Information Fields (Size, Type) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Farm Size (acres)</label>
@@ -284,7 +249,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Password */}
+            {/* Password Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
@@ -345,7 +310,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Terms */}
+            {/* Terms and Conditions Checkbox */}
             <div className="flex items-start">
               <input
                 type="checkbox"
@@ -387,6 +352,7 @@ const Signup = () => {
         </div>
       </div>
 
+      {/* Toast Notification */}
       {toast && (
         <Toast
           message={toast.message}
