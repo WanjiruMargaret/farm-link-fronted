@@ -1,59 +1,69 @@
-// src/services/marketService.js
-
-import api from "./api"; // Import the ApiService instance
-
-/**
- * Fetches the list of all crop listings.
- * Corresponds to: GET /api/market
- * @returns {Promise<Array>} Array of crop listing objects.
- */
-export async function fetchCrops() {
-    try {
-        // FIX: Replaced api.get with api.request
-        // The api.request method already returns the JSON body directly.
-        const crops = await api.request("/market"); 
-        return crops;
-    } catch (error) {
-        console.error("Error fetching crops:", error.message);
-        // Rethrow the error for component handling
-        throw error;
-    }
-}
+// ⚠️ We still assume this import works based on your last FirebaseContext.jsx file.
+import { db } from '../contexts/FirebaseContext'; 
+import { collection, query, getDocs, orderBy } from 'firebase/firestore'; 
 
 /**
- * Fetches the list of all Livestock available in the Marketplace.
- * Corresponds to: GET /api/market/livestock
- * @returns {Promise<Array>} Array of livestock listing objects.
+ * Fetches all crop listings from the 'crops' collection in Firestore.
  */
-export async function fetchLivestock() {
-    try {
-        // FIX: Replaced api.get with api.request
-        const livestock = await api.request("/market/livestock"); 
-        return livestock;
-    } catch (error) {
-        console.error("Error fetching livestock:", error.message);
-        // Returning empty array on fetch failure as requested in the original logic
-        return []; 
+export const fetchCrops = async () => {
+    console.log("Attempting to fetch crops from Firestore...");
+
+    // CRITICAL CHECK: Ensure the database is initialized
+    if (!db) {
+        console.error("Database (db) instance is null. Firebase initialization failed.");
+        throw new Error("Database connection unavailable.");
     }
-}
+
+    try {
+        // 2. Define the query: target 'crops' collection, sort by date added
+        const q = query(collection(db, 'crops'), orderBy('createdAt', 'desc'));
+        
+        const querySnapshot = await getDocs(q);
+        
+        // 3. Map the Firestore documents to a clean array of product objects
+        const cropsData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            rating: 4.5, // Placeholder rating
+            ...doc.data()
+        }));
+        
+        console.log("Crops fetched successfully:", cropsData.length);
+        return cropsData;
+
+    } catch (error) {
+        console.error("FIREBASE ERROR fetching crops:", error);
+        // Throw an error so the Marketplace component's try/catch can handle it
+        throw new Error("Could not connect to Firebase to fetch crops.");
+    }
+};
 
 /**
- * Submits a new crop listing.
- * Corresponds to: POST /api/market
- * @param {object} listingData - Requires at least 'name' and 'price'
- * @returns {Promise<object>} The newly created listing object.
+ * Fetches all livestock listings from the 'livestock' collection in Firestore.
  */
-export async function createListing(listingData) {
-    try {
-        // FIX: Replaced api.post with api.request using the POST method
-        const newListing = await api.request("/market", { 
-            method: 'POST',
-            body: JSON.stringify(listingData),
-        }); 
-        return newListing;
-    } catch (error) {
-        console.error("Error creating listing:", error.message);
-        // The error object thrown by api.request contains the custom message if available
-        throw new Error(error.message || "Failed to create market listing.");
+export const fetchLivestock = async () => {
+    // CRITICAL CHECK: Ensure the database is initialized
+    if (!db) {
+        console.error("Database (db) instance is null. Firebase initialization failed.");
+        throw new Error("Database connection unavailable.");
     }
-}
+
+    try {
+        // 4. Define the query for 'livestock'
+        const q = query(collection(db, 'livestock'), orderBy('createdAt', 'desc'));
+        
+        const querySnapshot = await getDocs(q);
+        
+        const livestockData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            rating: 4.0, 
+            ...doc.data()
+        }));
+
+        console.log("Livestock fetched successfully:", livestockData.length);
+        return livestockData;
+
+    } catch (error) {
+        console.error("FIREBASE ERROR fetching livestock:", error);
+        throw new Error("Could not connect to Firebase to fetch livestock.");
+    }
+};
