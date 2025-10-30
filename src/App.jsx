@@ -22,6 +22,7 @@ const Cart = lazy(() => import('./pages/Cart'));
 
 const MarketPrices = lazy(() => import('./pages/MarketPrices'));
 const FarmFinance = lazy(() => import('./pages/FarmFinance'));
+const MyProducts = lazy(() => import('./pages/MyProducts'));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -55,6 +56,7 @@ function App() {
 
             <Route path="/market-prices" element={<MarketPrices />} />
             <Route path="/finance" element={<FarmFinance />} />
+            <Route path="/my-products" element={<MyProducts />} />
           </Routes>
           <InstallPrompt />
         </Suspense>

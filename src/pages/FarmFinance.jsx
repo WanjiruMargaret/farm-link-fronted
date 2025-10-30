@@ -13,7 +13,7 @@ const FarmFinance = () => {
     {
       name: 'Crop Production Loan',
       rate: '12%',
-      maxAmount: 'KES 500,000',
+      maxAmount: 'KES 100,000',
       period: '6-12 months',
       requirements: ['Farm ownership/lease', 'Previous harvest records', 'ID & KRA PIN'],
       description: 'Short-term financing for seeds, fertilizers, and farming inputs'
@@ -21,15 +21,15 @@ const FarmFinance = () => {
     {
       name: 'Equipment Finance',
       rate: '15%',
-      maxAmount: 'KES 2,000,000',
+      maxAmount: 'KES 300,000',
       period: '12-36 months',
       requirements: ['Business registration', 'Down payment 20%', 'Collateral'],
-      description: 'Purchase tractors, irrigation systems, and farm machinery'
+      description: 'Purchase small equipment, irrigation systems, and farm tools'
     },
     {
       name: 'Livestock Loan',
       rate: '14%',
-      maxAmount: 'KES 1,000,000',
+      maxAmount: 'KES 200,000',
       period: '12-24 months',
       requirements: ['Veterinary records', 'Farm inspection', 'Insurance coverage'],
       description: 'Buy cattle, goats, poultry, and livestock infrastructure'
@@ -41,21 +41,21 @@ const FarmFinance = () => {
       name: 'Crop Insurance',
       premium: '3-5% of sum insured',
       coverage: 'Weather, pests, diseases',
-      maxCover: 'KES 1,000,000',
+      maxCover: 'KES 50,000',
       description: 'Protect your crops against natural disasters and pest attacks'
     },
     {
       name: 'Livestock Insurance',
       premium: '4-6% of sum insured',
       coverage: 'Death, theft, disease',
-      maxCover: 'KES 500,000',
+      maxCover: 'KES 100,000',
       description: 'Comprehensive coverage for your livestock investment'
     },
     {
       name: 'Equipment Insurance',
       premium: '2-3% of sum insured',
       coverage: 'Theft, damage, breakdown',
-      maxCover: 'KES 2,000,000',
+      maxCover: 'KES 150,000',
       description: 'Protect your valuable farm equipment and machinery'
     }
   ];

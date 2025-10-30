@@ -3,6 +3,7 @@ import { CloudUpload, Camera, AlertTriangle, CheckCircle, Lightbulb, Phone } fro
 import Navbar from '../components/Navbar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Toast from '../components/Toast';
+import apiService from '../services/api';
 
 const AIDiagnosis = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -77,20 +78,39 @@ const AIDiagnosis = () => {
   };
 
   const handleAnalyse = async () => {
-    if (!selectedImage) {
-      setToast({ message: 'Please upload an image first', type: 'error' });
+    if (!selectedImage && !symptoms.trim()) {
+      setToast({ message: 'Please upload a photo OR describe the problem', type: 'error' });
       return;
     }
 
     setLoading(true);
     
-    // Simulate AI processing
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      
+      if (selectedImage) {
+        // Get the actual file from the input
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput.files[0]) {
+          formData.append('image', fileInput.files[0]);
+        }
+      }
+      
+      formData.append('symptoms', symptoms);
+      formData.append('diagnosisType', diagnosisType);
+      
+      const diagnosis = await apiService.submitDiagnosis(formData);
+      setResult(diagnosis);
+      setToast({ message: 'Analysis complete!', type: 'success' });
+    } catch (error) {
+      console.error('Diagnosis failed:', error);
+      // Fallback to simulation if API fails
       const diagnosis = simulateAIAnalysis();
       setResult(diagnosis);
+      setToast({ message: 'Using offline analysis (API unavailable)', type: 'warning' });
+    } finally {
       setLoading(false);
-      setToast({ message: 'Analysis complete!', type: 'success' });
-    }, 3000);
+    }
   };
 
   return (
@@ -148,42 +168,69 @@ const AIDiagnosis = () => {
               </div>
             </div>
 
-            {/* Image Upload */}
-            <label className="flex flex-col items-center justify-center w-full h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:bg-gray-100 transition">
-              {selectedImage ? (
-                <img
-                  src={selectedImage}
-                  alt="Preview"
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              ) : (
-                <>
-                  <CloudUpload className="w-12 h-12 text-gray-400 mb-2" />
-                  <p className="text-gray-600 font-medium">Click to upload image</p>
-                  <p className="text-gray-500 text-sm">or drag and drop</p>
-                  <Camera className="w-6 h-6 text-gray-400 mt-2" />
-                </>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
+            {/* Method Selection */}
+            <div className="mb-6">
+              <p className="text-sm font-medium text-gray-700 mb-3">Choose how to describe the problem:</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="border-2 border-gray-300 rounded-lg p-4 text-center">
+                  <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="font-medium text-gray-700">Upload Photo</p>
+                  <p className="text-xs text-gray-500">Take a picture of the problem</p>
+                </div>
+                <div className="border-2 border-green-500 bg-green-50 rounded-lg p-4 text-center">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white text-sm font-bold">Aa</span>
+                  </div>
+                  <p className="font-medium text-green-700">Describe Problem</p>
+                  <p className="text-xs text-green-600">Tell us what you see</p>
+                </div>
+              </div>
+            </div>
 
-            {/* Symptoms Input */}
-            <div className="mt-6">
+            {/* Photo Upload Option */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Option 1: Upload Photo (Optional)</label>
+              <label className="flex flex-col items-center justify-center w-full h-48 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:bg-gray-100 transition">
+                {selectedImage ? (
+                  <img
+                    src={selectedImage}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <>
+                    <CloudUpload className="w-8 h-8 text-gray-400 mb-2" />
+                    <p className="text-gray-600 font-medium">Click to upload photo</p>
+                    <p className="text-gray-500 text-xs">JPG, PNG up to 10MB</p>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Text Description */}
+            <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Additional Symptoms (Optional)
+                Option 2: Describe the Problem
               </label>
               <textarea
                 value={symptoms}
                 onChange={(e) => setSymptoms(e.target.value)}
-                rows={4}
+                rows={5}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="Describe what you've observed: yellowing leaves, spots, unusual behavior, etc."
+                placeholder={diagnosisType === 'crop' ? 
+                  "Describe what you see: Are leaves turning yellow? Any spots or holes? Is the plant wilting? When did you first notice the problem?" :
+                  "Describe the symptoms: Is the animal eating normally? Any unusual behavior? Discharge from eyes/nose? When did symptoms start?"
+                }
               />
+              <p className="text-xs text-gray-500 mt-1">
+                The more details you provide, the better our diagnosis will be
+              </p>
             </div>
 
             {/* Analyze Button */}
@@ -210,7 +257,8 @@ const AIDiagnosis = () => {
             {!result && !loading && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🔬</div>
-                <p className="text-gray-500">Upload an image to get AI diagnosis</p>
+                <p className="text-gray-500 mb-2">Upload a photo OR describe the problem</p>
+                <p className="text-gray-400 text-sm">Our AI will analyze and provide treatment recommendations</p>
               </div>
             )}
 

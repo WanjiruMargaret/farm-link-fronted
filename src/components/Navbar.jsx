@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, BarChart3, Users, FileText, TrendingUp, Cloud, ShoppingBag, Stethoscope, User, DollarSign } from "lucide-react";
+import { Menu, X, BarChart3, Users, FileText, TrendingUp, Cloud, ShoppingBag, Stethoscope, User, DollarSign, Package } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -13,6 +13,7 @@ export default function Navbar() {
     { to: "/market-prices", icon: TrendingUp, label: "Market" },
 
     { to: "/marketplace", icon: ShoppingBag, label: "Marketplace" },
+    { to: "/my-products", icon: Package, label: "My Products" },
     { to: "/finance", icon: DollarSign, label: "Finance" },
     { to: "/profile", icon: User, label: "Profile" }
   ];
