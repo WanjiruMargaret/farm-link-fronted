@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { Search, Plus, MessageCircle, ThumbsUp, Clock, User, X } from 'lucide-react';
+// src/pages/CommunityHub.jsx (UPDATED)
+
+import React, { useState, useEffect, useCallback } from 'react'; // Added useEffect and useCallback
+import { Search, Plus, MessageCircle, ThumbsUp, Clock, User, X, Loader2 } from 'lucide-react'; // Added Loader2 for loading states
 import Navbar from '../components/Navbar';
+// 🔑 IMPORT THE SERVICE FUNCTIONS
+import { fetchPosts, createPost } from "../services/communityService"; 
 
 const CommunityHub = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,134 +13,93 @@ const CommunityHub = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [showReplies, setShowReplies] = useState(false);
   const [newReply, setNewReply] = useState('');
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: 'Best practices for tomato pest control',
-      content: 'I\'ve been dealing with whiteflies on my tomatoes. What organic methods have worked for you? I\'ve tried neem oil but the problem persists.',
-      author: 'John Kamau',
-      category: 'pest-control',
-      replies: [
-        { id: 1, author: 'Mary Wanjiku', content: 'Try using yellow sticky traps. They work great for whiteflies!', timeAgo: '1 hour ago' },
-        { id: 2, author: 'Peter Mwangi', content: 'Companion planting with marigolds helps repel whiteflies naturally.', timeAgo: '30 minutes ago' }
-      ],
-      likes: 8,
-      timeAgo: '2 hours ago'
-    },
-    {
-      id: 2,
-      title: 'Crop rotation schedule for small farms',
-      content: 'Looking for advice on effective crop rotation for a 5-acre farm. Currently growing maize, beans, and vegetables. What should I plant next season?',
-      author: 'Sarah Wanjiku',
-      category: 'farming-tips',
-      replies: [
-        { id: 1, author: 'James Maina', content: 'Try legumes after maize to fix nitrogen in the soil.', timeAgo: '2 hours ago' },
-        { id: 2, author: 'Grace Njeri', content: 'I rotate maize-beans-vegetables-fallow. Works well for soil health.', timeAgo: '1 hour ago' }
-      ],
-      likes: 15,
-      timeAgo: '5 hours ago'
-    },
-    {
-      id: 3,
-      title: 'Water conservation during dry season',
-      content: 'With the current drought, what are the best irrigation methods to conserve water while maintaining crop yield? Looking for cost-effective solutions.',
-      author: 'Peter Mwangi',
-      category: 'irrigation',
-      replies: [
-        { id: 1, author: 'Samuel Kiprop', content: 'Drip irrigation saves up to 50% water compared to sprinklers.', timeAgo: '4 hours ago' },
-        { id: 2, author: 'Alice Wambui', content: 'Mulching helps retain soil moisture significantly.', timeAgo: '3 hours ago' }
-      ],
-      likes: 12,
-      timeAgo: '1 day ago'
-    },
-    {
-      id: 4,
-      title: 'Dairy cow feeding tips for better milk production',
-      content: 'My cows are producing less milk lately. Any suggestions for improving their diet? Currently feeding them napier grass and dairy meal.',
-      author: 'Grace Njeri',
-      category: 'livestock',
-      replies: [
-        { id: 1, author: 'David Maasai', content: 'Add mineral supplements and ensure clean water supply.', timeAgo: '1 day ago' }
-      ],
-      likes: 6,
-      timeAgo: '2 days ago'
-    },
-    {
-      id: 5,
-      title: 'Organic fertilizer preparation at home',
-      content: 'How do you make compost manure at home? What materials work best and how long does it take?',
-      author: 'Rose Njoki',
-      category: 'farming-tips',
-      replies: [
-        { id: 1, author: 'Paul Ochieng', content: 'Kitchen waste + dry leaves + cow dung. Takes 3-4 months to decompose.', timeAgo: '2 hours ago' },
-        { id: 2, author: 'Margaret Akinyi', content: 'Turn the pile every 2 weeks for faster decomposition.', timeAgo: '1 hour ago' }
-      ],
-      likes: 18,
-      timeAgo: '3 hours ago'
-    },
-    {
-      id: 6,
-      title: 'Chicken diseases and prevention',
-      content: 'My chickens have been getting sick frequently. What are common diseases and how can I prevent them?',
-      author: 'Faith Wanjiku',
-      category: 'livestock',
-      replies: [
-        { id: 1, author: 'John Mwangi', content: 'Newcastle disease is common. Vaccinate regularly and keep coops clean.', timeAgo: '5 hours ago' },
-        { id: 2, author: 'Lucy Wanjiru', content: 'Provide proper ventilation and avoid overcrowding.', timeAgo: '3 hours ago' }
-      ],
-      likes: 14,
-      timeAgo: '6 hours ago'
-    },
-    {
-      id: 7,
-      title: 'Market prices for vegetables this season',
-      content: 'What are the current market prices for tomatoes, onions, and cabbages in Nairobi? Planning my planting schedule.',
-      author: 'Michael Otieno',
-      category: 'market-info',
-      replies: [
-        { id: 1, author: 'Sarah Chebet', content: 'Tomatoes: KES 60/kg, Onions: KES 50/kg, Cabbages: KES 30/kg at Wakulima Market.', timeAgo: '2 hours ago' }
-      ],
-      likes: 22,
-      timeAgo: '4 hours ago'
-    },
-    {
-      id: 8,
-      title: 'Greenhouse farming for beginners',
-      content: 'Thinking of starting greenhouse farming. What crops are most profitable and what\'s the initial investment?',
-      author: 'David Nyong\'o',
-      category: 'farming-tips',
-      replies: [
-        { id: 1, author: 'Agnes Mutua', content: 'Tomatoes and capsicum are very profitable. Initial cost around KES 200,000 for 8x30m.', timeAgo: '1 day ago' },
-        { id: 2, author: 'Joseph Kariuki', content: 'Start small with herbs like coriander and parsley. Lower investment, quick returns.', timeAgo: '18 hours ago' }
-      ],
-      likes: 25,
-      timeAgo: '1 day ago'
-    }
-  ]);
-  const [newPost, setNewPost] = useState({ title: '', content: '', category: 'farming-tips' });
+  
+  // 🔑 STATE FOR API-FETCHED DATA AND LOADING
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // For initial data fetch
+  const [isPosting, setIsPosting] = useState(false); // For post creation loading
+
+  // --- DUMMY DATA CLEANUP: Only keep UI-related mock data ---
+  // The 'posts' state will now be populated by the API.
 
   const categories = [
-    { id: 'all', name: 'All Topics', count: posts.length },
-    { id: 'farming-tips', name: 'Farming Tips', count: posts.filter(p => p.category === 'farming-tips').length },
-    { id: 'pest-control', name: 'Pest Control', count: posts.filter(p => p.category === 'pest-control').length },
-    { id: 'irrigation', name: 'Irrigation', count: posts.filter(p => p.category === 'irrigation').length },
-    { id: 'livestock', name: 'Livestock', count: posts.filter(p => p.category === 'livestock').length },
-    { id: 'market-info', name: 'Market Info', count: posts.filter(p => p.category === 'market-info').length }
+    { id: 'all', name: 'All Topics' },
+    { id: 'farming-tips', name: 'Farming Tips' },
+    { id: 'pest-control', name: 'Pest Control' },
+    { id: 'irrigation', name: 'Irrigation' },
+    { id: 'livestock', name: 'Livestock' },
+    { id: 'market-info', name: 'Market Info' }
   ];
+  const [newPost, setNewPost] = useState({ title: '', content: '', category: 'farming-tips' });
 
-  const handleNewPost = (e) => {
+  // 🔑 FUNCTION TO FETCH POSTS
+  const loadPosts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchPosts();
+      // NOTE: The API data (data) lacks 'replies', 'likes', 'timeAgo' 
+      // which were in your mock data. We'll use a placeholder for now 
+      // until you implement those features in the backend.
+      const postsForUI = data.map(post => ({
+        ...post,
+        // *** IMPORTANT PLACEHOLDERS: These fields need backend support later ***
+        replies: [], 
+        likes: 0, 
+        timeAgo: `${Math.floor(Math.random() * 24) + 1} hours ago`, // Mock time
+        author: post.user_id ? `User ${post.user_id}` : 'Anonymous', // Use user_id for now
+        // Assuming you need to look up category based on the post.
+        category: categories.find(c => c.id === 'farming-tips') ? 'farming-tips' : 'all' // Default to a category
+      }));
+      setPosts(postsForUI.reverse()); // Reverse to show latest first
+    } catch (error) {
+      console.error("Failed to load community posts:", error);
+      // Optional: set an error state to show an error message
+    } finally {
+      setIsLoading(false);
+    }
+  }, [categories]);
+
+  // 🔑 INITIAL DATA FETCH: useEffect hook
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
+
+
+  // 🔑 UPDATED handleNewPost: Uses API call
+  const handleNewPost = async (e) => {
     e.preventDefault();
-    const post = {
-      id: posts.length + 1,
-      ...newPost,
-      author: 'You',
-      replies: [],
-      likes: 0,
-      timeAgo: 'Just now'
+    setIsPosting(true);
+
+    // NOTE: Replace '1' with the actual logged-in user's ID from your auth context!
+    const postData = {
+      title: newPost.title,
+      content: newPost.content,
+      user_id: 1, // <<< REPLACE WITH ACTUAL USER ID
     };
-    setPosts([post, ...posts]);
-    setNewPost({ title: '', content: '', category: 'farming-tips' });
-    setShowNewPostModal(false);
+
+    try {
+      // 🔑 API CALL: POST new post data
+      const newPostResponse = await createPost(postData);
+
+      // Success: Create UI-friendly object and add to state
+      const postForUI = {
+        ...newPostResponse,
+        category: newPost.category, // Use the category selected in the form (frontend-only for now)
+        author: 'You', 
+        timeAgo: 'Just now',
+        replies: [],
+        likes: 0,
+      };
+
+      setPosts([postForUI, ...posts]); // Add the new post to the top of the list
+      setNewPost({ title: '', content: '', category: 'farming-tips' });
+      setShowNewPostModal(false);
+
+    } catch (error) {
+      alert("Failed to submit post: " + error.message);
+    } finally {
+      setIsPosting(false);
+    }
   };
 
   const handlePostClick = (post) => {
@@ -144,31 +107,34 @@ const CommunityHub = () => {
     setShowReplies(true);
   };
 
+  // NOTE: Reply and Like handlers are kept simple, still using local state 
+  // until you implement their backend routes (PATCH/POST to /posts/<id>/reply and /posts/<id>/like).
+
   const handleAddReply = (e) => {
     e.preventDefault();
     if (!newReply.trim()) return;
-    
+
     const reply = {
       id: selectedPost.replies.length + 1,
       author: 'You',
       content: newReply,
       timeAgo: 'Just now'
     };
-    
-    const updatedPosts = posts.map(post => 
-      post.id === selectedPost.id 
+
+    const updatedPosts = posts.map(post =>
+      post.id === selectedPost.id
         ? { ...post, replies: [...post.replies, reply] }
         : post
     );
-    
+
     setPosts(updatedPosts);
     setSelectedPost({ ...selectedPost, replies: [...selectedPost.replies, reply] });
     setNewReply('');
   };
 
   const handleLike = (postId) => {
-    const updatedPosts = posts.map(post => 
-      post.id === postId 
+    const updatedPosts = posts.map(post =>
+      post.id === postId
         ? { ...post, likes: post.likes + 1 }
         : post
     );
@@ -181,9 +147,16 @@ const CommunityHub = () => {
   const filteredPosts = posts.filter(post => {
     const matchesCategory = activeCategory === 'all' || post.category === activeCategory;
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchTerm.toLowerCase());
+      post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.author.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const getCategoryCount = (categoryId) => {
+    if (categoryId === 'all') return posts.length;
+    // NOTE: This count is now based on posts fetched from API, not your original mock list
+    return posts.filter(p => p.category === categoryId).length; 
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -242,7 +215,7 @@ const CommunityHub = () => {
                     <div className="flex justify-between items-center">
                       <span>{category.name}</span>
                       <span className="text-sm bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
-                        {category.count}
+                        {getCategoryCount(category.id)}
                       </span>
                     </div>
                   </button>
@@ -254,7 +227,28 @@ const CommunityHub = () => {
           {/* Posts */}
           <div className="lg:col-span-3">
             <div className="space-y-6">
-              {filteredPosts.map(post => (
+              {/* Loading State */}
+              {isLoading && (
+                <div className="text-center py-12 flex items-center justify-center space-x-2 text-green-600">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <p className="text-lg">Loading discussions...</p>
+                </div>
+              )}
+              
+              {/* No Posts Found State */}
+              {!isLoading && filteredPosts.length === 0 && (
+                <div className="text-center py-12 bg-white rounded-lg shadow-md">
+                  <p className="text-gray-500 text-lg">
+                    {posts.length === 0 
+                      ? "There are no discussions yet. Start the first one!"
+                      : "No discussions found matching your search criteria."
+                    }
+                  </p>
+                </div>
+              )}
+
+              {/* Display Posts */}
+              {!isLoading && filteredPosts.map(post => (
                 <div key={post.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePostClick(post)}>
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
@@ -270,7 +264,7 @@ const CommunityHub = () => {
                       </div>
                     </div>
                     <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                      {categories.find(c => c.id === post.category)?.name}
+                      {categories.find(c => c.id === post.category)?.name || 'General'}
                     </span>
                   </div>
                   
@@ -292,12 +286,6 @@ const CommunityHub = () => {
                   </div>
                 </div>
               ))}
-
-              {filteredPosts.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">No discussions found matching your criteria.</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -359,14 +347,23 @@ const CommunityHub = () => {
                 <div className="flex space-x-4">
                   <button
                     type="submit"
-                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-medium"
+                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-medium disabled:bg-green-400"
+                    disabled={isPosting}
                   >
-                    Post Discussion
+                    {isPosting ? (
+                        <span className="flex items-center justify-center">
+                            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                            Posting...
+                        </span>
+                    ) : (
+                        'Post Discussion'
+                    )}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowNewPostModal(false)}
                     className="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition font-medium"
+                    disabled={isPosting}
                   >
                     Cancel
                   </button>
@@ -377,7 +374,7 @@ const CommunityHub = () => {
         </div>
       )}
 
-      {/* Post Details Modal */}
+      {/* Post Details Modal (Kept the same for local reply/like handlers) */}
       {showReplies && selectedPost && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">

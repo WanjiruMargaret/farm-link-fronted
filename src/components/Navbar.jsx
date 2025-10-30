@@ -1,16 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Bell } from "lucide-react";
+import { fetchNotifications } from "../services/notificationService"; // ✅ adjust path if needed
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const handleLinkClick = () => {
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    // Fetch notifications on mount
+    async function getNotifications() {
+      try {
+        const notifications = await fetchNotifications();
+        const unread = notifications.filter((n) => !n.read).length;
+        setUnreadCount(unread);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    }
+    getNotifications();
+  }, []);
+
   return (
     <nav className="relative">
+      {/* Mobile menu toggle */}
       <button
         className="md:hidden text-white focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
@@ -19,6 +36,7 @@ export default function Navbar() {
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
+      {/* Overlay for mobile */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 md:hidden z-40"
@@ -26,6 +44,7 @@ export default function Navbar() {
         />
       )}
 
+      {/* Links container */}
       <div
         className={`${
           isOpen ? "translate-x-0" : "-translate-x-full"
@@ -73,6 +92,22 @@ export default function Navbar() {
         >
           Profile
         </Link>
+
+        {/* 🔔 Notifications */}
+        <div className="relative w-full md:w-auto">
+          <Link
+            to="/notifications"
+            className="text-white hover:text-green-200 transition font-medium flex items-center"
+            onClick={handleLinkClick}
+          >
+            <Bell className="w-6 h-6" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                {unreadCount}
+              </span>
+            )}
+          </Link>
+        </div>
       </div>
     </nav>
   );

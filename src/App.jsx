@@ -7,10 +7,11 @@ import Dashboard from "./pages/Dashboard";
 import AIDiagnosis from "./pages/AIDiagnosis";
 import Records from "./pages/Records";
 import About from "./pages/About";
-import Home from './pages/Home';
-import CommunityHub from './pages/CommunityHub';
-import Profile from './pages/Profile';
-import Marketplace from './pages/Marketplace';
+import Home from "./pages/Home";
+import CommunityHub from "./pages/CommunityHub";
+import Profile from "./pages/Profile";
+import Marketplace from "./pages/Marketplace";
+import NotificationsPage from "./pages/NotificationsPage"; // ✅ NEW IMPORT
 
 function App() {
   return (
@@ -26,8 +27,10 @@ function App() {
       <Route path="/marketplace" element={<Marketplace />} />
       <Route path="/community" element={<CommunityHub />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/notifications" element={<NotificationsPage />} /> {/* ✅ NEW ROUTE */}
     </Routes>
   );
 }
 
 export default App;
+
