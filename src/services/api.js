@@ -2,7 +2,18 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
 class ApiService {
+  constructor() {
+    this.backendAvailable = true;
+    this.lastBackendCheck = 0;
+    this.backendCheckInterval = 30000; // Check every 30 seconds
+  }
   async request(endpoint, options = {}) {
+    // Check if backend is available before making request
+    const now = Date.now();
+    if (!this.backendAvailable && (now - this.lastBackendCheck) < this.backendCheckInterval) {
+      throw new Error('Backend not available');
+    }
+
     const url = `${API_BASE_URL}${endpoint}`;
     const config = {
       headers: {
@@ -21,9 +32,23 @@ class ApiService {
       delete config.headers['Content-Type'];
     }
 
-    const response = await fetch(url, config);
-    if (!response.ok) throw new Error(`API Error: ${response.status}`);
-    return await response.json();
+    try {
+      const response = await fetch(url, config);
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      
+      // Backend is available
+      this.backendAvailable = true;
+      this.lastBackendCheck = now;
+      
+      return await response.json();
+    } catch (error) {
+      // Check if it's a connection error
+      if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
+        this.backendAvailable = false;
+        this.lastBackendCheck = now;
+      }
+      throw error;
+    }
   }
 
   // Weather with OpenWeatherMap fallback

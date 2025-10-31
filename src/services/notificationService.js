@@ -18,8 +18,8 @@ export async function fetchNotifications() {
     return notifications;
   } catch (error) {
     console.error("Error fetching notifications:", error);
-    // Re-throw a simplified error for component consumption
-    throw new Error("Failed to load notifications from the server.");
+    // Return empty array instead of throwing error to prevent UI crashes
+    return [];
   }
 }
 

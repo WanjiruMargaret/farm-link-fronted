@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import Navbar from '../components/Navbar';
-
-const Marketplace = () => {
-  return (
-    <div className="min-h-screen bg-gray-50">
-=======
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, ShoppingCart, Filter, SlidersHorizontal, Heart, Star, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -62,6 +54,7 @@ const Marketplace = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // NOTE: This is fallback/placeholder data since the API call might fail or return empty.
   const marketData = {
     crops: [
       { id: 1, name: 'Potatoes', location: 'Nyandaria', price: 35, unit: 'per kg', seller: 'John Kamau', stock: 500, rating: 4.5 },
@@ -91,16 +84,21 @@ const Marketplace = () => {
     ].map(product => ({ ...product, image: getProductImage(product.name, 'livestock') }))
   };
 
-  const locations = [...new Set(marketData[activeTab].map(p => p.location))];
+  const locations = [...new Set(marketData.crops.concat(marketData.livestock).map(p => p.location))];
 
   useEffect(() => {
     loadProducts();
   }, [activeTab]);
 
   const loadProducts = async () => {
+    // NOTE: Using fallback data for now as the API service is mocked or not fully defined.
+    // In a real app, this would fetch data from the backend.
+    setLoading(true);
     try {
-      const response = await apiService.getAllProducts(activeTab);
-      setAllProducts(response.products || []);
+      // Assuming apiService.getAllProducts returns { products: [...] }
+      // const response = await apiService.getAllProducts(activeTab);
+      // setAllProducts(response.products || marketData[activeTab] || []);
+      setAllProducts(marketData[activeTab] || []);
     } catch (error) {
       console.error('Failed to load products:', error);
       setAllProducts(marketData[activeTab] || []);
@@ -109,12 +107,14 @@ const Marketplace = () => {
     }
   };
 
+  // Determine which data source to use: API products if loaded, otherwise fallback data
   const currentProducts = allProducts.length > 0 ? allProducts : marketData[activeTab];
+
   const filteredProducts = currentProducts
     .filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.seller.toLowerCase().includes(searchTerm.toLowerCase());
+                            product.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            product.seller.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
       const matchesLocation = !selectedLocation || product.location === selectedLocation;
       return matchesSearch && matchesPrice && matchesLocation;
@@ -150,22 +150,13 @@ const Marketplace = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
->>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
       <header className="bg-green-600 text-white p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">Marketplace</h1>
           <Navbar />
         </div>
       </header>
-<<<<<<< HEAD
       
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Marketplace Coming Soon</h2>
-          <p className="text-gray-600">Buy and sell agricultural products directly with other farmers.</p>
-        </div>
-=======
-
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Search and Filters */}
         <div className="mb-8">
@@ -371,7 +362,7 @@ const Marketplace = () => {
                         product.stock < 10 ? 'text-orange-500' : 'text-green-500'
                       }`}>
                         {product.stock === 0 ? 'Out of Stock' : 
-                         product.stock < 10 ? `Only ${product.stock} left` : 'In Stock'}
+                          product.stock < 10 ? `Only ${product.stock} left` : 'In Stock'}
                       </span>
                       <div className="flex items-center text-sm text-gray-500">
                         <Truck className="w-3 h-3 mr-1" />
@@ -422,7 +413,6 @@ const Marketplace = () => {
             </button>
           </div>
         )}
->>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
       </div>
     </div>
   );
