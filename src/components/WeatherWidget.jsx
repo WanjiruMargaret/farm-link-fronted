@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Cloud, Sun, CloudRain, Wind, Thermometer, Droplets } from 'lucide-react';
+import { Cloud, Sun, CloudRain, Wind, Thermometer, Droplets, MapPin, RefreshCw } from 'lucide-react';
 import apiService from '../services/api';
 
-const WeatherWidget = ({ location = 'Nairobi, Kenya' }) => {
+const WeatherWidget = ({ location = 'Nairobi, Kenya', showLocationInput = false }) => {
   const [weather, setWeather] = useState(null);
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(location);
+  const [locationInput, setLocationInput] = useState('');
+
+  useEffect(() => {
+    setCurrentLocation(location);
+  }, [location]);
 
   useEffect(() => {
     loadWeatherData();
-  }, [location]);
+  }, [currentLocation]);
 
   const loadWeatherData = async () => {
     try {
       setLoading(true);
       const [currentWeather, forecastData] = await Promise.all([
-        apiService.getWeatherData(location),
-        apiService.getWeatherForecast(location, 5)
+        apiService.getWeatherData(currentLocation),
+        apiService.getWeatherForecast(currentLocation, 5)
       ]);
       
       setWeather(currentWeather);
@@ -31,7 +37,7 @@ const WeatherWidget = ({ location = 'Nairobi, Kenya' }) => {
         condition: 'Partly Cloudy',
         humidity: 65,
         windSpeed: 12,
-        location: location
+        location: currentLocation
       });
       setForecast([
         { day: 'Today', high: 26, low: 18, condition: 'Sunny' },
@@ -44,6 +50,18 @@ const WeatherWidget = ({ location = 'Nairobi, Kenya' }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLocationChange = (e) => {
+    e.preventDefault();
+    if (locationInput.trim()) {
+      setCurrentLocation(locationInput.trim());
+      setLocationInput('');
+    }
+  };
+
+  const refreshWeather = () => {
+    loadWeatherData();
   };
 
   const getWeatherIcon = (condition) => {
@@ -79,12 +97,41 @@ const WeatherWidget = ({ location = 'Nairobi, Kenya' }) => {
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800">Weather</h3>
-        {error && (
-          <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
-            Offline
-          </span>
-        )}
+        <div className="flex items-center space-x-2">
+          {error && (
+            <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded">
+              Offline
+            </span>
+          )}
+          <button
+            onClick={refreshWeather}
+            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+            title="Refresh weather data"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
+
+      {showLocationInput && (
+        <form onSubmit={handleLocationChange} className="mb-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={locationInput}
+              onChange={(e) => setLocationInput(e.target.value)}
+              placeholder="Enter location..."
+              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <button
+              type="submit"
+              className="px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 flex items-center"
+            >
+              <MapPin className="w-3 h-3" />
+            </button>
+          </div>
+        </form>
+      )}
 
       {weather && (
         <>
@@ -150,16 +197,28 @@ const WeatherWidget = ({ location = 'Nairobi, Kenya' }) => {
 };
 
 const getFarmingAdvice = (weather) => {
-  if (weather.temperature > 30) {
-    return "High temperatures - ensure adequate irrigation and shade for livestock.";
-  } else if (weather.temperature < 15) {
-    return "Cool weather - protect young plants and provide shelter for animals.";
-  } else if (weather.condition?.toLowerCase().includes('rain')) {
-    return "Rainy conditions - good for planting but check for waterlogging.";
-  } else if (weather.humidity > 80) {
-    return "High humidity - monitor crops for fungal diseases.";
+  const temp = weather.temperature;
+  const condition = weather.condition?.toLowerCase() || '';
+  const humidity = weather.humidity;
+  
+  if (temp > 35) {
+    return "⚠️ Extreme heat - provide shade for livestock, increase irrigation frequency.";
+  } else if (temp > 30) {
+    return "🌡️ High temperatures - ensure adequate irrigation and shade for livestock.";
+  } else if (temp < 10) {
+    return "🥶 Very cold - protect young plants from frost, provide warm shelter for animals.";
+  } else if (temp < 15) {
+    return "❄️ Cool weather - protect young plants and provide shelter for animals.";
+  } else if (condition.includes('rain') || condition.includes('storm')) {
+    return "🌧️ Rainy conditions - good for planting but check drainage to prevent waterlogging.";
+  } else if (humidity > 85) {
+    return "💧 Very high humidity - monitor crops closely for fungal diseases and pests.";
+  } else if (humidity > 70) {
+    return "🌫️ High humidity - monitor crops for fungal diseases, ensure good air circulation.";
+  } else if (temp >= 20 && temp <= 28 && humidity >= 40 && humidity <= 70) {
+    return "✅ Excellent weather conditions for most farming activities and crop growth.";
   } else {
-    return "Good weather conditions for most farming activities.";
+    return "🌱 Good weather conditions for farming activities.";
   }
 };
 
