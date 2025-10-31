@@ -1,25 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Bell } from "lucide-react";
-import { fetchNotifications } from "../services/notificationService"; // ✅ adjust path if needed
+import { Menu, X, Bell, ShoppingCart } from "lucide-react";
+import { fetchNotifications } from "../services/notificationService";
+import { useCart } from "../context/CartContext"; // ✅ import cart context
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // 🛒 get cart data from context
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLinkClick = () => {
     setIsOpen(false);
   };
 
   useEffect(() => {
-    // Fetch notifications on mount
     async function getNotifications() {
       try {
         const notifications = await fetchNotifications();
         const unread = notifications.filter((n) => !n.read).length;
         setUnreadCount(unread);
-      } catch (error) {
-        // Silently handle error - backend might not be running
+      } catch {
         setUnreadCount(0);
       }
     }
@@ -112,6 +115,22 @@ export default function Navbar() {
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
                 {unreadCount}
+              </span>
+            )}
+          </Link>
+        </div>
+
+        {/* 🛒 Cart */}
+        <div className="relative w-full md:w-auto">
+          <Link
+            to="/cart"
+            className="text-white hover:text-green-200 transition font-medium flex items-center"
+            onClick={handleLinkClick}
+          >
+            <ShoppingCart className="w-6 h-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-yellow-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                {cartCount}
               </span>
             )}
           </Link>

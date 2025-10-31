@@ -42,8 +42,8 @@ class ApiService {
       
       return await response.json();
     } catch (error) {
-      // Check if it's a connection error
-      if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
+      // Mark backend as unavailable for connection errors
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
         this.backendAvailable = false;
         this.lastBackendCheck = now;
       }
