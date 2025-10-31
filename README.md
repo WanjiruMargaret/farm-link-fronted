@@ -1,16 +1,142 @@
-# React + Vite
+ 🌾 FarmLink 360 Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+FarmLink 360 is a digital agriculture management platform that helps farmers manage their farms, diagnose plant diseases, and connect with other farmers.
 
-Currently, two official plugins are available:
+This is the **frontend** built with **React (Vite)**, **Tailwind CSS**, and **Firebase**, integrated with the **FarmLink Flask backend API**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🔐 Authentication (Sign up / Login via Firebase)
+- 🌱 AI Diagnosis page connected to Gemini AI backend
+- 🧾 Farm records dashboard
+- 📤 Cloudinary image uploads via backend
+- 💬 Community feed & marketplace pages
+- ⚡ Fast and modern UI using Tailwind + React Router
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🧰 Tech Stack
+
+| Category | Technology |
+|-----------|-------------|
+| Framework | React + Vite |
+| Routing | React Router DOM |
+| Styling | Tailwind CSS |
+| State Management | React Hooks / Context |
+| Authentication | Firebase |
+| Backend API | Flask (FarmLink Backend) |
+| Deployment | Vercel / Netlify |
+
+---
+
+## ⚙️ Setup & Installation
+
+### 1️⃣ Clone the project
+```bash
+git clone https://github.com/your-username/farm-link-frontend.git
+cd farm-link-frontend
+2️⃣ Install dependencies
+bash
+Copy code
+npm install
+3️⃣ Create a .env file in the root of the project
+Add your Firebase and backend API configuration here:
+
+bash
+Copy code
+VITE_FIREBASE_CONFIG={"apiKey":"your-api-key","authDomain":"your-app.firebaseapp.com","projectId":"your-project-id","storageBucket":"your-app.appspot.com","messagingSenderId":"your-sender-id","appId":"your-app-id"}
+VITE_BACKEND_URL=http://127.0.0.1:5000
+⚠️ Note:
+Make sure the Firebase config is wrapped in {} (valid JSON format) and matches your Firebase project settings.
+
+🧩 Project Structure
+pgsql
+Copy code
+farm-link-frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   │   ├── Login.jsx
+│   │   ├── Signup.jsx
+│   │   ├── Dashboard.jsx
+│   │   ├── Records.jsx
+│   │   ├── Diagnose.jsx
+│   │   └── Community.jsx
+│   ├── contexts/
+│   │   └── FirebaseContext.jsx
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── public/
+├── package.json
+├── vite.config.js
+└── README.md
+🧠 Firebase Setup Guide
+Go to Firebase Console.
+
+Create a new Firebase project (or use an existing one).
+
+Add a Web App and copy your config (apiKey, authDomain, etc.).
+
+Enable Authentication → Email/Password in Firebase Console.
+
+Paste your Firebase config inside .env → VITE_FIREBASE_CONFIG.
+
+🏃‍♀️ Running the App Locally
+Start the development server:
+bash
+Copy code
+npm run dev
+Then open:
+
+arduino
+Copy code
+http://localhost:5173
+Build for production:
+bash
+Copy code
+npm run build
+🔗 Connecting to Backend
+Your backend API (Flask) should be running locally or deployed (e.g. Render or Railway).
+
+Update your .env file with the backend URL:
+
+bash
+Copy code
+VITE_BACKEND_URL=https://your-backend.onrender.com
+The frontend will then automatically connect to that API for features like:
+
+Record management
+
+AI diagnosis
+
+Cloudinary uploads
+
+🧩 Common Issues
+Issue	Fix
+App reloads after login/signup	Ensure FirebaseContext uses useNavigate() for redirects
+Firebase configuration string is empty	Check .env — ensure VITE_FIREBASE_CONFIG is correctly set
+Network errors to backend	Ensure backend URL in .env is correct and running
+
+🌐 Deployment
+🟢 Deploy to Vercel
+Push your project to GitHub.
+
+Go to Vercel Dashboard.
+
+Import your repo.
+
+Add environment variables:
+
+VITE_FIREBASE_CONFIG
+
+VITE_BACKEND_URL
+
+Deploy 🚀
+
+❤️ Credits
+Developed by Maggie & Team
+Frontend built with 💚 React, Tailwind, and Firebase
+Backend powered by Flask + PostgreSQL + Gemini
