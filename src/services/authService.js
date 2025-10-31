@@ -1,13 +1,14 @@
-import api from "./api";
+// authService.js
+import axios from 'axios';
 
-// LOGIN request
-export async function loginUser(email, password) {
-  const response = await api.post("/auth/login", { email, password });
-  return response.data;
-}
+const API_URL = 'http://127.0.0.1:5000'; // adjust if needed
 
-// REGISTER request (optional)
-export async function registerUser(userData) {
-  const response = await api.post("/register", userData);
+export const registerUser = async (data) => {
+  const response = await axios.post(`${API_URL}/auth/register`, data);
   return response.data;
-}
+};
+
+export const loginUser = async (data) => {
+  const response = await axios.post(`${API_URL}/auth/login`, data);
+  return response.data;
+};

@@ -3,11 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Toast from "../components/Toast";
-// NOTE: For Firebase integration, we will use the useFirebase hook here later.
-// The current implementation uses a promise delay to simulate network login and handle UI states correctly.
+import { loginUser } from "../services/authService";
 
 export default function Login() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -16,59 +15,45 @@ export default function Login() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear specific error when user starts typing
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const validateForm = () => {
+    const { email, password } = formData;
     const newErrors = {};
-    
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    
+    if (!email) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Please enter a valid email";
+
+    if (!password) newErrors.password = "Password is required";
+    else if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
-      // Simulate network latency and successful authentication
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Demo login success logic
-      if (formData.email === 'demo@farmlink.com' && formData.password === 'demo123') {
-        // In a real app, this is where Firebase would set the user session/token.
-        localStorage.setItem('farmlink-user', JSON.stringify({
-          email: formData.email,
-          name: 'Demo User',
-          loginTime: new Date().toISOString()
-        }));
-        setToast({ message: 'Login successful! Redirecting...', type: 'success' });
-        // Redirect to a primary protected route
-        setTimeout(() => navigate('/home'), 1000);
-      } else {
-        setToast({ message: 'Invalid email or password.', type: 'error' });
-      }
+      const data = await loginUser(formData.email, formData.password);
+
+      // Save JWT and user info
+      localStorage.setItem("farmlink-token", data.access_token);
+      localStorage.setItem("farmlink-user", JSON.stringify(data.user));
+
+      setToast({ message: "Login successful! Redirecting...", type: "success" });
+      setTimeout(() => navigate("/home"), 1000);
     } catch (error) {
-      console.error("Login Error:", error);
-      setToast({ message: 'Login failed. A network or server error occurred.', type: 'error' });
+      console.error("Login failed:", error);
+      setToast({
+        message: error.response?.data?.error || "Login failed. Try again.",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -101,11 +86,10 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                  errors.email 
-                    ? 'border-red-300 focus:ring-red-500' 
-                    : 'border-gray-300 focus:ring-green-500'
+                  errors.email ? "border-red-300 focus:ring-red-500" : "border-gray-300 focus:ring-green-500"
                 }`}
                 placeholder="Enter your email"
+                aria-invalid={errors.email ? "true" : "false"}
               />
             </div>
             {errors.email && (
@@ -124,23 +108,22 @@ export default function Login() {
             <div className="relative">
               <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
-                  errors.password 
-                    ? 'border-red-300 focus:ring-red-500' 
-                    : 'border-gray-300 focus:ring-green-500'
+                  errors.password ? "border-red-300 focus:ring-red-500" : "border-gray-300 focus:ring-green-500"
                 }`}
                 placeholder="Enter your password"
+                aria-invalid={errors.password ? "true" : "false"}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 p-1"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -162,9 +145,12 @@ export default function Login() {
               />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
-            <button type="button" className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
+            >
               Forgot password?
-            </button>
+            </Link>
           </div>
 
           {/* Submit Button */}
@@ -179,36 +165,26 @@ export default function Login() {
                 <span className="ml-2">Signing in...</span>
               </>
             ) : (
-              'Sign In'
+              "Sign In"
             )}
           </button>
         </form>
 
-        {/* Demo Credentials */}
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800 font-medium mb-2">Demo Credentials (for now):</p>
-          <p className="text-xs text-blue-600">Email: <span className="font-mono bg-blue-100 p-1 rounded">demo@farmlink.com</span></p>
-          <p className="text-xs text-blue-600 mt-1">Password: <span className="font-mono bg-blue-100 p-1 rounded">demo123</span></p>
-        </div>
-
         {/* Sign Up Link */}
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-green-600 hover:text-green-700 font-medium transition-colors">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-green-600 hover:text-green-700 font-medium transition-colors"
+            >
               Sign up here
             </Link>
           </p>
         </div>
       </div>
 
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }
