@@ -6,8 +6,15 @@ import api from "./api"; // Ensure this path is correct
  */
 export async function fetchNotifications() {
   try {
-    // FIX: Changed api.request to use api.get for a GET request
-    const notifications = await api.get("/notifications"); 
+    // FIX: Changed api.get back to api.request to resolve the TypeError from the logs.
+    const notifications = await api.request("/notifications"); 
+    
+    // Safety check: Ensure the result is an array
+    if (!Array.isArray(notifications)) {
+        console.warn("API returned non-array data for notifications:", notifications);
+        return [];
+    }
+    
     return notifications;
   } catch (error) {
     console.error("Error fetching notifications:", error);
@@ -22,8 +29,10 @@ export async function fetchNotifications() {
  */
 export async function markNotificationAsRead(notificationId) {
   try {
-    // FIX: Changed api.request to use api.put for a PUT request
-    await api.put(`/notifications/${notificationId}/read`);
+    // FIX: Changed api.put to api.request, explicitly setting the method to 'PUT'.
+    await api.request(`/notifications/${notificationId}/read`, {
+        method: 'PUT' 
+    });
     console.log(`Notification ${notificationId} marked as read.`);
   } catch (error) {
     console.error("Error marking notification as read:", error);
