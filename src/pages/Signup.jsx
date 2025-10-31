@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Mail, Phone, MapPin, AlertCircle } from 'lucide-react';
-import LoadingSpinner from '../components/LoadingSpinner';
-import Toast from '../components/Toast';
+// Assuming these custom components are in '../components'
+import LoadingSpinner from '../components/LoadingSpinner'; 
+import Toast from '../components/Toast'; 
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -22,14 +23,16 @@ const Signup = () => {
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
+  // Kenyan counties list for the location dropdown
   const counties = [
     'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Meru', 'Thika', 'Kiambu',
-    'Machakos', 'Nyeri', 'Embu', 'Kakamega', 'Busia', 'Kisii', 'Nandi', 'Laikipia'
+    'Machakos', 'Nyeri', 'Embu', 'Kakamea', 'Busia', 'Kisii', 'Nandi', 'Laikipia'
   ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error for the field being changed
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -48,6 +51,7 @@ const Signup = () => {
       newErrors.email = 'Please enter a valid email';
     }
     
+    // Basic Kenyan phone number validation (starting with +254 or 0, followed by 7, 8, or 9 and 8 more digits)
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
     } else if (!/^(\+254|0)[7-9]\d{8}$/.test(formData.phone)) {
@@ -79,10 +83,10 @@ const Signup = () => {
     
     setLoading(true);
     try {
-      // Simulate API call
+      // Simulate API call for registration
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Save user data
+      // Simulate saving user data to local storage on success
       localStorage.setItem('farmlink-user', JSON.stringify({
         ...formData,
         id: Date.now(),
@@ -90,7 +94,8 @@ const Signup = () => {
       }));
       
       setToast({ message: 'Account created successfully! Redirecting...', type: 'success' });
-      setTimeout(() => navigate('/marketplace'), 1000);
+      // Redirect to a dashboard or marketplace after a delay
+      setTimeout(() => navigate('/marketplace'), 1000); 
     } catch (error) {
       setToast({ message: 'Registration failed. Please try again.', type: 'error' });
     } finally {
@@ -112,7 +117,7 @@ const Signup = () => {
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
+            {/* Personal Information Fields (Full Name, Email) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
@@ -161,6 +166,7 @@ const Signup = () => {
               </div>
             </div>
 
+            {/* Contact and Location Fields (Phone, Location) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
@@ -212,7 +218,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Farm Information */}
+            {/* Farm Information Fields (Size, Type) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Farm Size (acres)</label>
@@ -243,7 +249,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Password */}
+            {/* Password Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
@@ -304,7 +310,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Terms */}
+            {/* Terms and Conditions Checkbox */}
             <div className="flex items-start">
               <input
                 type="checkbox"
@@ -346,6 +352,7 @@ const Signup = () => {
         </div>
       </div>
 
+      {/* Toast Notification */}
       {toast && (
         <Toast
           message={toast.message}

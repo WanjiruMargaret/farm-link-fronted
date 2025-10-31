@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
-import { FirebaseProvider } from "./contexts/FirebaseContext.jsx";
+import { FirebaseProvider } from "./contexts/FirebaseContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 import InstallPrompt from "./components/InstallPrompt";

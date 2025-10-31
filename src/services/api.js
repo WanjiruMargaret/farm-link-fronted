@@ -17,17 +17,20 @@ class ApiService {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    if (options.body instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+
     const response = await fetch(url, config);
     if (!response.ok) throw new Error(`API Error: ${response.status}`);
     return await response.json();
   }
 
-  // Weather - Try backend first, fallback to OpenWeatherMap
+  // Weather with OpenWeatherMap fallback
   async getWeatherData(location) {
     try {
       return await this.request(`/weather?location=${encodeURIComponent(location)}`);
     } catch (error) {
-      // Fallback to direct OpenWeatherMap API
       if (WEATHER_API_KEY) {
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&appid=${WEATHER_API_KEY}&units=metric`
@@ -38,7 +41,7 @@ class ApiService {
             temperature: Math.round(data.main.temp),
             condition: data.weather[0].main,
             humidity: data.main.humidity,
-            windSpeed: Math.round(data.wind.speed * 3.6), // Convert m/s to km/h
+            windSpeed: Math.round(data.wind.speed * 3.6),
             location: `${data.name}, ${data.sys.country}`
           };
         }
@@ -51,7 +54,6 @@ class ApiService {
     try {
       return await this.request(`/weather/forecast?location=${encodeURIComponent(location)}&days=${days}`);
     } catch (error) {
-      // Fallback to direct OpenWeatherMap API
       if (WEATHER_API_KEY) {
         const response = await fetch(
           `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(location)}&appid=${WEATHER_API_KEY}&units=metric`
@@ -85,12 +87,11 @@ class ApiService {
     }
   }
 
-  // AI Diagnosis - Backend handles AI processing
+  // Other API methods
   async submitDiagnosis(formData) {
     return this.request('/diagnosis', {
       method: 'POST',
       body: formData,
-      headers: {}, // Let browser set Content-Type for FormData
     });
   }
 
@@ -98,64 +99,22 @@ class ApiService {
     return this.request(`/diagnosis/history/${userId}`);
   }
 
-  // Community - Backend handles database operations
   async getPosts(category = 'all', page = 1, limit = 10) {
     const params = new URLSearchParams({ category, page, limit });
-    return this.request(`/community/posts?${params}`);
+    return this.request(`/posts?${params}`);
   }
 
   async createPost(postData) {
-    return this.request('/community/posts', {
+    return this.request('/posts', {
       method: 'POST',
       body: JSON.stringify(postData),
     });
   }
 
-  async likePost(postId) {
-    return this.request(`/community/posts/${postId}/like`, {
-      method: 'POST',
-    });
-  }
-
-  async addReply(postId, replyData) {
-    return this.request(`/community/posts/${postId}/replies`, {
-      method: 'POST',
-      body: JSON.stringify(replyData),
-    });
-  }
-
-  // Market Prices - Backend handles price data
   async getMarketPrices() {
     return this.request('/market/prices');
   }
 
-  // Farmer Products - CRUD operations
-  async addProduct(formData) {
-    return this.request('/farmer/products', {
-      method: 'POST',
-      body: formData,
-      headers: {}, // Let browser set Content-Type for FormData
-    });
-  }
-
-  async getMyProducts() {
-    return this.request('/farmer/products');
-  }
-
-  async updateProduct(productId, productData) {
-    return this.request(`/farmer/products/${productId}`, {
-      method: 'PUT',
-      body: JSON.stringify(productData),
-    });
-  }
-
-  async deleteProduct(productId) {
-    return this.request(`/farmer/products/${productId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Marketplace - Browse all products
   async getAllProducts(category = 'all', location = '') {
     const params = new URLSearchParams({ category, location });
     return this.request(`/marketplace/products?${params}`);
