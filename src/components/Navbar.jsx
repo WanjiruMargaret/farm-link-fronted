@@ -85,6 +85,14 @@ export default function Navbar() {
         </Link>
 
         <Link
+          to="/weather"
+          className="text-white hover:text-green-200 transition font-medium w-full md:w-auto"
+          onClick={handleLinkClick}
+        >
+          Weather
+        </Link>
+
+        <Link
           to="/profile"
           className="text-white hover:text-green-200 transition font-medium w-full md:w-auto"
           onClick={handleLinkClick}

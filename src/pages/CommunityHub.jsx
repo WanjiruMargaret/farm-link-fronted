@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+import React from 'react';
+import Navbar from '../components/Navbar';
+
+const CommunityHub = () => {
+=======
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, MessageCircle, ThumbsUp, Clock, User, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -332,15 +338,24 @@ const CommunityHub = () => {
     return matchesCategory && matchesSearch;
   });
 
+>>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-green-600 text-white p-4">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">Community Hub</h1>
           <Navbar />
         </div>
       </header>
+<<<<<<< HEAD
+      
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Community Features Coming Soon</h2>
+          <p className="text-gray-600">Connect with other farmers, share experiences, and learn together.</p>
+        </div>
+      </div>
+=======
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Welcome Section */}
@@ -629,8 +644,13 @@ const CommunityHub = () => {
           </div>
         </div>
       )}
+>>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
     </div>
   );
 };
 
+<<<<<<< HEAD
 export default CommunityHub;
+=======
+export default CommunityHub;
+>>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df

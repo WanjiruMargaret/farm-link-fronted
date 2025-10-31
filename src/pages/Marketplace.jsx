@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+import React from 'react';
+import Navbar from '../components/Navbar';
+
+const Marketplace = () => {
+  return (
+    <div className="min-h-screen bg-gray-50">
+=======
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, ShoppingCart, Filter, SlidersHorizontal, Heart, Star, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -142,22 +150,21 @@ const Marketplace = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+>>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
       <header className="bg-green-600 text-white p-4">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">FarmLink Marketplace</h1>
-          <div className="flex items-center space-x-4">
-            <Navbar />
-            <Link to="/cart" className="relative">
-              <ShoppingCart className="w-6 h-6 hover:text-green-200 transition" />
-              {getTotalItems() > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                  {getTotalItems()}
-                </span>
-              )}
-            </Link>
-          </div>
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Marketplace</h1>
+          <Navbar />
         </div>
       </header>
+<<<<<<< HEAD
+      
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Marketplace Coming Soon</h2>
+          <p className="text-gray-600">Buy and sell agricultural products directly with other farmers.</p>
+        </div>
+=======
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Search and Filters */}
@@ -415,15 +422,8 @@ const Marketplace = () => {
             </button>
           </div>
         )}
+>>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
       </div>
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
     </div>
   );
 };

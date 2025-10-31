@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TrendingUp, Users, ShoppingBag, DollarSign, Target, Globe, Award, BarChart3 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import WeatherWidget from '../components/WeatherWidget';
+import WeatherCard from '../components/WeatherCard';
 
 export default function Dashboard() {
   const [timeframe, setTimeframe] = useState('month');
@@ -99,7 +99,7 @@ export default function Dashboard() {
 
         {/* Platform Overview & Weather */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <WeatherWidget location="Nairobi, Kenya" />
+          <WeatherCard location="Nairobi, Kenya" />
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-bold text-gray-900 mb-4">Business Model</h3>
             <div className="space-y-4">
