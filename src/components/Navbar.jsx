@@ -19,7 +19,8 @@ export default function Navbar() {
         const unread = notifications.filter((n) => !n.read).length;
         setUnreadCount(unread);
       } catch (error) {
-        console.error("Error fetching notifications:", error);
+        // Silently handle error - backend might not be running
+        setUnreadCount(0);
       }
     }
     getNotifications();

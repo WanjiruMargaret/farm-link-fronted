@@ -40,21 +40,6 @@ export default function Login() {
 
     setLoading(true);
     try {
-<<<<<<< HEAD
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      if (formData.email && formData.password.length >= 6) {
-        localStorage.setItem('farmlink-user', JSON.stringify({
-          email: formData.email,
-          name: 'Demo User',
-          loginTime: new Date().toISOString()
-        }));
-        setToast({ message: 'Login successful! Redirecting...', type: 'success' });
-        setTimeout(() => navigate('/marketplace'), 1000);
-      } else {
-        setToast({ message: 'Invalid credentials', type: 'error' });
-      }
-=======
       const data = await loginUser(formData.email, formData.password);
 
       // Save JWT and user info
@@ -63,7 +48,6 @@ export default function Login() {
 
       setToast({ message: "Login successful! Redirecting...", type: "success" });
       setTimeout(() => navigate("/home"), 1000);
->>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
     } catch (error) {
       console.error("Login failed:", error);
       setToast({
@@ -87,10 +71,7 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-<<<<<<< HEAD
-=======
           {/* Email Field */}
->>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
@@ -118,6 +99,7 @@ export default function Login() {
             )}
           </div>
 
+          {/* Password Field */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Password
@@ -153,6 +135,7 @@ export default function Login() {
             )}
           </div>
 
+          {/* Remember Me + Forgot Password */}
           <div className="flex items-center justify-between">
             <label className="flex items-center">
               <input
@@ -169,6 +152,7 @@ export default function Login() {
             </Link>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -185,16 +169,7 @@ export default function Login() {
           </button>
         </form>
 
-<<<<<<< HEAD
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800 font-medium mb-2">Demo Credentials:</p>
-          <p className="text-xs text-blue-600">Email: demo@farmlink.com</p>
-          <p className="text-xs text-blue-600">Password: demo123</p>
-        </div>
-
-=======
         {/* Sign Up Link */}
->>>>>>> 1d10a388827edf4f2535fc29f1ac72f5fb2e86df
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Don't have an account?{" "}
