@@ -6,7 +6,11 @@ import api from "./api"; // Ensure this path is correct
  */
 export async function fetchNotifications() {
   try {
-    // FIX: Changed api.get back to api.request to resolve the TypeError from the logs.
+    // Check if backend is available before making request
+    if (!api.backendAvailable && (Date.now() - api.lastBackendCheck) < api.backendCheckInterval) {
+      return []; // Return empty array if backend is known to be unavailable
+    }
+    
     const notifications = await api.request("/notifications"); 
     
     // Safety check: Ensure the result is an array
@@ -17,8 +21,7 @@ export async function fetchNotifications() {
     
     return notifications;
   } catch (error) {
-    console.error("Error fetching notifications:", error);
-    // Return empty array instead of throwing error to prevent UI crashes
+    // Silently return empty array for connection errors
     return [];
   }
 }
